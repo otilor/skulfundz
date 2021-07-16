@@ -133,7 +133,7 @@
 							</span></h1>
                     <!--end::Title-->
                     <!--begin::Action-->
-                    <a href="index.html" class="btn btn-primary">Try Metronic</a>
+                    <a href="#" class="btn btn-primary w-20 py-5">Try SkulFundz Action</a>
                     <!--end::Action-->
                 </div>
                 <!--end::Heading-->
