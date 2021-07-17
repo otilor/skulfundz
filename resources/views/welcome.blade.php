@@ -274,7 +274,7 @@
                             <span class="badge badge-circle badge-light-success fw-bolder p-5 me-3 fs-3">3</span>
                             <!--end::Badge-->
                             <!--begin::Title-->
-                            <div class="fs-5 fs-lg-3 fw-bolder text-dark">Enjoy Nautica App</div>
+                            <div class="fs-5 fs-lg-3 fw-bolder text-dark">Start sending them 🤑</div>
                             <!--end::Title-->
                         </div>
                         <!--end::Heading-->
