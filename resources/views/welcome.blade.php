@@ -5,8 +5,8 @@
 <head><base href="">
     <meta charset="utf-8" />
     <title>SkulFundz</title>
-    <meta name="description" content="Metronic admin dashboard live demo. Check out all the features of the admin panel. A large number of settings, additional services and widgets." />
-    <meta name="keywords" content="Metronic, bootstrap, bootstrap 5, Angular 11, VueJs, React, Laravel, admin themes, web design, figma, web development, ree admin themes, bootstrap admin, bootstrap dashboard" />
+    <meta name="description" content="SkulFundz is an application that helps parents or guardians manage the finances of their wards in school." />
+    <meta name="keywords" content="School, money, fees, Skul, Fundz, SkulFundz" />
     <link rel="canonical" href="http://skulfundz.test" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
