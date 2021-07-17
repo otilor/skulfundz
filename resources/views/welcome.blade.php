@@ -224,14 +224,14 @@
                             <span class="badge badge-circle badge-light-success fw-bolder p-5 me-3 fs-3">1</span>
                             <!--end::Badge-->
                             <!--begin::Title-->
-                            <div class="fs-5 fs-lg-3 fw-bolder text-dark">Jane Miller</div>
+                            <div class="fs-5 fs-lg-3 fw-bolder text-dark">Create an account</div>
                             <!--end::Title-->
                         </div>
                         <!--end::Heading-->
                         <!--begin::Description-->
-                        <div class="fw-bold fs-6 fs-lg-4 text-muted">Save thousands to millions of bucks
-                            <br />by using single tool for different
-                            <br />amazing and great</div>
+                        <div class="fw-bold fs-6 fs-lg-4 text-muted">Create an account as a parent or student
+                            <br />For parents, add your wards as beneficiaries.
+                            <br />For students, add your parents as sponsors</div>
                         <!--end::Description-->
                     </div>
                     <!--end::Story-->
