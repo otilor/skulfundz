@@ -485,15 +485,7 @@
                     <!--end::Copyright-->
                     <!--begin::Menu-->
                     <ul class="menu menu-gray-600 menu-hover-primary fw-bold fs-6 fs-md-5 order-1 mb-5 mb-md-0">
-                        <li class="menu-item">
-                            <a href="https://keenthemes.com/faqs" target="_blank" class="menu-link px-2">About</a>
-                        </li>
-                        <li class="menu-item mx-5">
-                            <a href="https://keenthemes.com/support" target="_blank" class="menu-link px-2">Support</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="" target="_blank" class="menu-link px-2">Purchase</a>
-                        </li>
+                        <span class="text-white">Crafted by Gabriel Akinyosoye 👨🏽‍💻</span>
                     </ul>
                     <!--end::Menu-->
                 </div>
