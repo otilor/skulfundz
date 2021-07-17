@@ -274,12 +274,12 @@
                             <span class="badge badge-circle badge-light-success fw-bolder p-5 me-3 fs-3">3</span>
                             <!--end::Badge-->
                             <!--begin::Title-->
-                            <div class="fs-5 fs-lg-3 fw-bolder text-dark">Start sending them 🤑</div>
+                            <div class="fs-5 fs-lg-3 fw-bolder text-dark">Start sending them money 🤑</div>
                             <!--end::Title-->
                         </div>
                         <!--end::Heading-->
                         <!--begin::Description-->
-                        <div class="fw-bold fs-6 fs-lg-4 text-muted">Save thousands to millions of bucks
+                        <div class="fw-bold fs-6 fs-lg-4 text-muted">Start sending them money
                             <br />by using single tool for different
                             <br />amazing and great</div>
                         <!--end::Description-->
