@@ -416,7 +416,6 @@
                                 <a href="#" class="text-white opacity-50 text-hover-primary fs-5 mb-6">Changelog</a>
                                 <!--end::Link-->
                                 <!--begin::Link-->
-                                <a href="#" class="text-white opacity-50 text-hover-primary fs-5 mb-6">Github</a>
                                 <!--end::Link-->
                                 <!--begin::Link-->
                                 <a href="#" class="text-white opacity-50 text-hover-primary fs-5">Tutorials</a>
@@ -435,10 +434,6 @@
                                 </a>
                                 <!--end::Link-->
                                 <!--begin::Link-->
-                                <a href="#" class="mb-6">
-                                    <img src="assets/media/svg/brand-logos/github.svg" class="h-20px me-2" alt="" />
-                                    <span class="text-white opacity-50 text-hover-primary fs-5 mb-6">Github</span>
-                                </a>
                                 <!--end::Link-->
                                 <!--begin::Link-->
                                 <a href="#" class="mb-6">
