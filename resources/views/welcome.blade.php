@@ -479,7 +479,7 @@
                         </a>
                         <!--end::Logo image-->
                         <!--begin::Logo image-->
-                        <span class="mx-5 fs-6 fw-bold text-gray-600 pt-1" href="https://keenthemes.com">© 2021 Keenthemes Inc.</span>
+                        <span class="mx-5 fs-6 fw-bold text-gray-600 pt-1" href="https://keenthemes.com">© {{ now()->get('year') }}  Fundz Inc.</span>
                         <!--end::Logo image-->
                     </div>
                     <!--end::Copyright-->
