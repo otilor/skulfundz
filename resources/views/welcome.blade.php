@@ -230,8 +230,7 @@
                         <!--end::Heading-->
                         <!--begin::Description-->
                         <div class="fw-bold fs-6 fs-lg-4 text-muted">Create an account as a parent or student
-                            <br />For parents, add your wards as beneficiaries.
-                            <br />For students, add your parents as sponsors</div>
+                        </div>
                         <!--end::Description-->
                     </div>
                     <!--end::Story-->
@@ -250,7 +249,7 @@
                             <span class="badge badge-circle badge-light-success fw-bolder p-5 me-3 fs-3">2</span>
                             <!--end::Badge-->
                             <!--begin::Title-->
-                            <div class="fs-5 fs-lg-3 fw-bolder text-dark">Setup Your App</div>
+                            <div class="fs-5 fs-lg-3 fw-bolder text-dark">Add beneficiaries</div>
                             <!--end::Title-->
                         </div>
                         <!--end::Heading-->
