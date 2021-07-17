@@ -254,9 +254,8 @@
                         </div>
                         <!--end::Heading-->
                         <!--begin::Description-->
-                        <div class="fw-bold fs-6 fs-lg-4 text-muted">Save thousands to millions of bucks
-                            <br />by using single tool for different
-                            <br />amazing and great</div>
+                        <div class="fw-bold fs-6 fs-lg-4 text-muted">Add your children as beneficiaries
+                        </div>
                         <!--end::Description-->
                     </div>
                     <!--end::Story-->
