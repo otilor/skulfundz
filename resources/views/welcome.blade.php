@@ -1694,7 +1694,7 @@
                     <!--begin::Copyright-->
                     <div class="d-flex align-items-center order-2 order-md-1">
                         <!--begin::Logo-->
-                        <a href="landing.html">
+                        <a href="/">
                             <img alt="Logo" src="assets/media/logos/logo-landing.svg" class="h-15px h-md-20px" />
                         </a>
                         <!--end::Logo image-->
