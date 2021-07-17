@@ -205,7 +205,7 @@
                 <!--end::Title-->
                 <!--begin::Text-->
                 <div class="fs-5 text-muted fw-bold">Save for the raining day
-                    <br />make sapa no do you strong thing.</div>
+                    <br />make sapa no do you strong thing. 🤢</div>
                 <!--end::Text-->
             </div>
             <!--end::Heading-->
