@@ -373,7 +373,7 @@
                         <!--begin::Block-->
                         <div class="rounded landing-dark-border p-9 mb-10">
                             <!--begin::Title-->
-                            <h2 class="text-white">Would you like to speak with us?</h2>
+                            <h2 class="text-white">Would you like to chat with us?</h2>
                             <!--end::Title-->
                             <!--begin::Text-->
                             <span class="fw-normal fs-4 text-gray-700">Email us to
@@ -384,11 +384,11 @@
                         <!--begin::Block-->
                         <div class="rounded landing-dark-border p-9">
                             <!--begin::Title-->
-                            <h2 class="text-white">How About a Custom Project?</h2>
+                            <h2 class="text-white">Would you like to speak with us?</h2>
                             <!--end::Title-->
                             <!--begin::Text-->
-                            <span class="fw-normal fs-4 text-gray-700">Use Our Custom Development Service.
-									<a href="pages/profile/overview.html" class="text-white opacity-50 text-hover-primary">Click to Get a Quote</a></span>
+                            <span class="fw-normal fs-4 text-gray-700">Call our available Hotlines
+									<a href="pages/profile/overview.html" class="text-white opacity-50 text-hover-primary">+2348181801589, +2348164460787</a></span>
                             <!--end::Text-->
                         </div>
                         <!--end::Block-->
