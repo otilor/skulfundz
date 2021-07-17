@@ -373,11 +373,11 @@
                         <!--begin::Block-->
                         <div class="rounded landing-dark-border p-9 mb-10">
                             <!--begin::Title-->
-                            <h2 class="text-white">Would you need a Custom License?</h2>
+                            <h2 class="text-white">Would you like to speak with us?</h2>
                             <!--end::Title-->
                             <!--begin::Text-->
                             <span class="fw-normal fs-4 text-gray-700">Email us to
-									<a href="https://keenthemes.com/support" class="text-white opacity-50 text-hover-primary">support@keenthemes.com</a></span>
+									<a href="https://keenthemes.com/support" class="text-white opacity-50 text-hover-primary">gabrielfemi799@gmail.com</a></span>
                             <!--end::Text-->
                         </div>
                         <!--end::Block-->
