@@ -51,7 +51,7 @@
                             </button>
                             <!--end::Mobile menu toggle-->
                             <!--begin::Logo image-->
-                            <a href="landing.html">
+                            <a href="/">
                                 <img alt="Logo" src="assets/media/logos/logo-landing.svg" class="logo-default h-25px h-lg-30px" />
                                 <img alt="Logo" src="assets/media/logos/logo-landing-dark.svg" class="logo-sticky h-20px h-lg-25px" />
                             </a>
