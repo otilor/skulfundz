@@ -401,7 +401,7 @@
                             <!--begin::Links-->
                             <div class="d-flex fw-bold flex-column me-20">
                                 <!--begin::Subtitle-->
-                                <h4 class="fw-bolder text-gray-400 mb-6">More for Metronic</h4>
+                                <h4 class="fw-bolder text-gray-400 mb-6">More for SkulFundz</h4>
                                 <!--end::Subtitle-->
                                 <!--begin::Link-->
                                 <a href="#" class="text-white opacity-50 text-hover-primary fs-5 mb-6">FAQ</a>
@@ -447,10 +447,6 @@
                                 </a>
                                 <!--end::Link-->
                                 <!--begin::Link-->
-                                <a href="#" class="mb-6">
-                                    <img src="assets/media/svg/brand-logos/dribbble-icon-1.svg" class="h-20px me-2" alt="" />
-                                    <span class="text-white opacity-50 text-hover-primary fs-5 mb-6">Dribbble</span>
-                                </a>
                                 <!--end::Link-->
                                 <!--begin::Link-->
                                 <a href="#" class="mb-6">
