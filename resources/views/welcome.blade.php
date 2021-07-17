@@ -345,178 +345,178 @@
     <!--begin::Statistics Section-->
     <!--end::Statistics Section-->
     <!--begin::Team Section-->
-    <div class="py-10 py-lg-20">
-        <!--begin::Container-->
-        <div class="container">
-            <!--begin::Heading-->
-            <div class="text-center mb-12">
-                <!--begin::Title-->
-                <h3 class="fs-2hx text-dark mb-5" id="team" data-kt-scroll-offset="{default: 100, lg: 150}">Our Great Team</h3>
-                <!--end::Title-->
-                <!--begin::Sub-title-->
-                <div class="fs-5 text-muted fw-bold">It’s no doubt that when a development takes longer to complete, additional costs to
-                    <br />integrate and test each extra feature creeps up and haunts most of us.</div>
-                <!--end::Sub-title=-->
-            </div>
-            <!--end::Heading-->
-            <!--begin::Slider-->
-            <div class="tns tns-default">
-                <!--begin::Wrapper-->
-                <div data-tns="true" data-tns-loop="true" data-tns-swipe-angle="false" data-tns-speed="2000" data-tns-autoplay="true" data-tns-autoplay-timeout="18000" data-tns-controls="true" data-tns-nav="false" data-tns-items="1" data-tns-center="false" data-tns-dots="false" data-tns-prev-button="#kt_team_slider_prev" data-tns-next-button="#kt_team_slider_next" data-tns-responsive="{1200: {items: 3}, 992: {items: 2}}">
-                    <!--begin::Item-->
-                    <div class="text-center">
-                        <!--begin::Photo-->
-                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-2.jpg')"></div>
-                        <!--end::Photo-->
-                        <!--begin::Person-->
-                        <div class="mb-0">
-                            <!--begin::Name-->
-                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">Paul Miles</a>
-                            <!--end::Name-->
-                            <!--begin::Position-->
-                            <div class="text-muted fs-6 fw-bold mt-1">Development Lead</div>
-                            <!--begin::Position-->
-                        </div>
-                        <!--end::Person-->
-                    </div>
-                    <!--end::Item-->
-                    <!--begin::Item-->
-                    <div class="text-center">
-                        <!--begin::Photo-->
-                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-3.jpg')"></div>
-                        <!--end::Photo-->
-                        <!--begin::Person-->
-                        <div class="mb-0">
-                            <!--begin::Name-->
-                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">Melisa Marcus</a>
-                            <!--end::Name-->
-                            <!--begin::Position-->
-                            <div class="text-muted fs-6 fw-bold mt-1">Creative Director</div>
-                            <!--begin::Position-->
-                        </div>
-                        <!--end::Person-->
-                    </div>
-                    <!--end::Item-->
-                    <!--begin::Item-->
-                    <div class="text-center">
-                        <!--begin::Photo-->
-                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-4.jpg')"></div>
-                        <!--end::Photo-->
-                        <!--begin::Person-->
-                        <div class="mb-0">
-                            <!--begin::Name-->
-                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">David Nilson</a>
-                            <!--end::Name-->
-                            <!--begin::Position-->
-                            <div class="text-muted fs-6 fw-bold mt-1">Python Expert</div>
-                            <!--begin::Position-->
-                        </div>
-                        <!--end::Person-->
-                    </div>
-                    <!--end::Item-->
-                    <!--begin::Item-->
-                    <div class="text-center">
-                        <!--begin::Photo-->
-                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-5.jpg')"></div>
-                        <!--end::Photo-->
-                        <!--begin::Person-->
-                        <div class="mb-0">
-                            <!--begin::Name-->
-                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">Anne Clarc</a>
-                            <!--end::Name-->
-                            <!--begin::Position-->
-                            <div class="text-muted fs-6 fw-bold mt-1">Project Manager</div>
-                            <!--begin::Position-->
-                        </div>
-                        <!--end::Person-->
-                    </div>
-                    <!--end::Item-->
-                    <!--begin::Item-->
-                    <div class="text-center">
-                        <!--begin::Photo-->
-                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-6.jpg')"></div>
-                        <!--end::Photo-->
-                        <!--begin::Person-->
-                        <div class="mb-0">
-                            <!--begin::Name-->
-                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">Ricky Hunt</a>
-                            <!--end::Name-->
-                            <!--begin::Position-->
-                            <div class="text-muted fs-6 fw-bold mt-1">Art Director</div>
-                            <!--begin::Position-->
-                        </div>
-                        <!--end::Person-->
-                    </div>
-                    <!--end::Item-->
-                    <!--begin::Item-->
-                    <div class="text-center">
-                        <!--begin::Photo-->
-                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-7.jpg')"></div>
-                        <!--end::Photo-->
-                        <!--begin::Person-->
-                        <div class="mb-0">
-                            <!--begin::Name-->
-                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">Alice Wayde</a>
-                            <!--end::Name-->
-                            <!--begin::Position-->
-                            <div class="text-muted fs-6 fw-bold mt-1">Marketing Manager</div>
-                            <!--begin::Position-->
-                        </div>
-                        <!--end::Person-->
-                    </div>
-                    <!--end::Item-->
-                    <!--begin::Item-->
-                    <div class="text-center">
-                        <!--begin::Photo-->
-                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-8.jpg')"></div>
-                        <!--end::Photo-->
-                        <!--begin::Person-->
-                        <div class="mb-0">
-                            <!--begin::Name-->
-                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">Carles Puyol</a>
-                            <!--end::Name-->
-                            <!--begin::Position-->
-                            <div class="text-muted fs-6 fw-bold mt-1">QA Managers</div>
-                            <!--begin::Position-->
-                        </div>
-                        <!--end::Person-->
-                    </div>
-                    <!--end::Item-->
-                </div>
-                <!--end::Wrapper-->
-                <!--begin::Button-->
-                <button class="btn btn-icon btn-active-color-primary" id="kt_team_slider_prev">
-                    <!--begin::Svg Icon | path: icons/duotone/Navigation/Angle-left.svg-->
-                    <span class="svg-icon svg-icon-3x">
-								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-									<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-										<polygon points="0 0 24 0 24 24 0 24" />
-										<path d="M6.70710678,15.7071068 C6.31658249,16.0976311 5.68341751,16.0976311 5.29289322,15.7071068 C4.90236893,15.3165825 4.90236893,14.6834175 5.29289322,14.2928932 L11.2928932,8.29289322 C11.6714722,7.91431428 12.2810586,7.90106866 12.6757246,8.26284586 L18.6757246,13.7628459 C19.0828436,14.1360383 19.1103465,14.7686056 18.7371541,15.1757246 C18.3639617,15.5828436 17.7313944,15.6103465 17.3242754,15.2371541 L12.0300757,10.3841378 L6.70710678,15.7071068 Z" fill="#000000" fill-rule="nonzero" transform="translate(12.000003, 11.999999) scale(-1, 1) rotate(-270.000000) translate(-12.000003, -11.999999)" />
-									</g>
-								</svg>
-							</span>
-                    <!--end::Svg Icon-->
-                </button>
-                <!--end::Button-->
-                <!--begin::Button-->
-                <button class="btn btn-icon btn-active-color-primary" id="kt_team_slider_next">
-                    <!--begin::Svg Icon | path: icons/duotone/Navigation/Angle-right.svg-->
-                    <span class="svg-icon svg-icon-3x">
-								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-									<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-										<polygon points="0 0 24 0 24 24 0 24" />
-										<path d="M6.70710678,15.7071068 C6.31658249,16.0976311 5.68341751,16.0976311 5.29289322,15.7071068 C4.90236893,15.3165825 4.90236893,14.6834175 5.29289322,14.2928932 L11.2928932,8.29289322 C11.6714722,7.91431428 12.2810586,7.90106866 12.6757246,8.26284586 L18.6757246,13.7628459 C19.0828436,14.1360383 19.1103465,14.7686056 18.7371541,15.1757246 C18.3639617,15.5828436 17.7313944,15.6103465 17.3242754,15.2371541 L12.0300757,10.3841378 L6.70710678,15.7071068 Z" fill="#000000" fill-rule="nonzero" transform="translate(12.000003, 11.999999) rotate(-270.000000) translate(-12.000003, -11.999999)" />
-									</g>
-								</svg>
-							</span>
-                    <!--end::Svg Icon-->
-                </button>
-                <!--end::Button-->
-            </div>
-            <!--end::Slider-->
-        </div>
-        <!--end::Container-->
-    </div>
+{{--    <div class="py-10 py-lg-20">--}}
+{{--        <!--begin::Container-->--}}
+{{--        <div class="container">--}}
+{{--            <!--begin::Heading-->--}}
+{{--            <div class="text-center mb-12">--}}
+{{--                <!--begin::Title-->--}}
+{{--                <h3 class="fs-2hx text-dark mb-5" id="team" data-kt-scroll-offset="{default: 100, lg: 150}">Our Great Team</h3>--}}
+{{--                <!--end::Title-->--}}
+{{--                <!--begin::Sub-title-->--}}
+{{--                <div class="fs-5 text-muted fw-bold">It’s no doubt that when a development takes longer to complete, additional costs to--}}
+{{--                    <br />integrate and test each extra feature creeps up and haunts most of us.</div>--}}
+{{--                <!--end::Sub-title=-->--}}
+{{--            </div>--}}
+{{--            <!--end::Heading-->--}}
+{{--            <!--begin::Slider-->--}}
+{{--            <div class="tns tns-default">--}}
+{{--                <!--begin::Wrapper-->--}}
+{{--                <div data-tns="true" data-tns-loop="true" data-tns-swipe-angle="false" data-tns-speed="2000" data-tns-autoplay="true" data-tns-autoplay-timeout="18000" data-tns-controls="true" data-tns-nav="false" data-tns-items="1" data-tns-center="false" data-tns-dots="false" data-tns-prev-button="#kt_team_slider_prev" data-tns-next-button="#kt_team_slider_next" data-tns-responsive="{1200: {items: 3}, 992: {items: 2}}">--}}
+{{--                    <!--begin::Item-->--}}
+{{--                    <div class="text-center">--}}
+{{--                        <!--begin::Photo-->--}}
+{{--                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-2.jpg')"></div>--}}
+{{--                        <!--end::Photo-->--}}
+{{--                        <!--begin::Person-->--}}
+{{--                        <div class="mb-0">--}}
+{{--                            <!--begin::Name-->--}}
+{{--                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">Paul Miles</a>--}}
+{{--                            <!--end::Name-->--}}
+{{--                            <!--begin::Position-->--}}
+{{--                            <div class="text-muted fs-6 fw-bold mt-1">Development Lead</div>--}}
+{{--                            <!--begin::Position-->--}}
+{{--                        </div>--}}
+{{--                        <!--end::Person-->--}}
+{{--                    </div>--}}
+{{--                    <!--end::Item-->--}}
+{{--                    <!--begin::Item-->--}}
+{{--                    <div class="text-center">--}}
+{{--                        <!--begin::Photo-->--}}
+{{--                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-3.jpg')"></div>--}}
+{{--                        <!--end::Photo-->--}}
+{{--                        <!--begin::Person-->--}}
+{{--                        <div class="mb-0">--}}
+{{--                            <!--begin::Name-->--}}
+{{--                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">Melisa Marcus</a>--}}
+{{--                            <!--end::Name-->--}}
+{{--                            <!--begin::Position-->--}}
+{{--                            <div class="text-muted fs-6 fw-bold mt-1">Creative Director</div>--}}
+{{--                            <!--begin::Position-->--}}
+{{--                        </div>--}}
+{{--                        <!--end::Person-->--}}
+{{--                    </div>--}}
+{{--                    <!--end::Item-->--}}
+{{--                    <!--begin::Item-->--}}
+{{--                    <div class="text-center">--}}
+{{--                        <!--begin::Photo-->--}}
+{{--                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-4.jpg')"></div>--}}
+{{--                        <!--end::Photo-->--}}
+{{--                        <!--begin::Person-->--}}
+{{--                        <div class="mb-0">--}}
+{{--                            <!--begin::Name-->--}}
+{{--                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">David Nilson</a>--}}
+{{--                            <!--end::Name-->--}}
+{{--                            <!--begin::Position-->--}}
+{{--                            <div class="text-muted fs-6 fw-bold mt-1">Python Expert</div>--}}
+{{--                            <!--begin::Position-->--}}
+{{--                        </div>--}}
+{{--                        <!--end::Person-->--}}
+{{--                    </div>--}}
+{{--                    <!--end::Item-->--}}
+{{--                    <!--begin::Item-->--}}
+{{--                    <div class="text-center">--}}
+{{--                        <!--begin::Photo-->--}}
+{{--                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-5.jpg')"></div>--}}
+{{--                        <!--end::Photo-->--}}
+{{--                        <!--begin::Person-->--}}
+{{--                        <div class="mb-0">--}}
+{{--                            <!--begin::Name-->--}}
+{{--                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">Anne Clarc</a>--}}
+{{--                            <!--end::Name-->--}}
+{{--                            <!--begin::Position-->--}}
+{{--                            <div class="text-muted fs-6 fw-bold mt-1">Project Manager</div>--}}
+{{--                            <!--begin::Position-->--}}
+{{--                        </div>--}}
+{{--                        <!--end::Person-->--}}
+{{--                    </div>--}}
+{{--                    <!--end::Item-->--}}
+{{--                    <!--begin::Item-->--}}
+{{--                    <div class="text-center">--}}
+{{--                        <!--begin::Photo-->--}}
+{{--                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-6.jpg')"></div>--}}
+{{--                        <!--end::Photo-->--}}
+{{--                        <!--begin::Person-->--}}
+{{--                        <div class="mb-0">--}}
+{{--                            <!--begin::Name-->--}}
+{{--                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">Ricky Hunt</a>--}}
+{{--                            <!--end::Name-->--}}
+{{--                            <!--begin::Position-->--}}
+{{--                            <div class="text-muted fs-6 fw-bold mt-1">Art Director</div>--}}
+{{--                            <!--begin::Position-->--}}
+{{--                        </div>--}}
+{{--                        <!--end::Person-->--}}
+{{--                    </div>--}}
+{{--                    <!--end::Item-->--}}
+{{--                    <!--begin::Item-->--}}
+{{--                    <div class="text-center">--}}
+{{--                        <!--begin::Photo-->--}}
+{{--                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-7.jpg')"></div>--}}
+{{--                        <!--end::Photo-->--}}
+{{--                        <!--begin::Person-->--}}
+{{--                        <div class="mb-0">--}}
+{{--                            <!--begin::Name-->--}}
+{{--                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">Alice Wayde</a>--}}
+{{--                            <!--end::Name-->--}}
+{{--                            <!--begin::Position-->--}}
+{{--                            <div class="text-muted fs-6 fw-bold mt-1">Marketing Manager</div>--}}
+{{--                            <!--begin::Position-->--}}
+{{--                        </div>--}}
+{{--                        <!--end::Person-->--}}
+{{--                    </div>--}}
+{{--                    <!--end::Item-->--}}
+{{--                    <!--begin::Item-->--}}
+{{--                    <div class="text-center">--}}
+{{--                        <!--begin::Photo-->--}}
+{{--                        <div class="octagon mx-auto mb-5 d-flex w-200px h-200px bgi-no-repeat bgi-size-contain bgi-position-center" style="background-image:url('assets/media/avatars/150-8.jpg')"></div>--}}
+{{--                        <!--end::Photo-->--}}
+{{--                        <!--begin::Person-->--}}
+{{--                        <div class="mb-0">--}}
+{{--                            <!--begin::Name-->--}}
+{{--                            <a href="#" class="text-dark fw-bolder text-hover-primary fs-3">Carles Puyol</a>--}}
+{{--                            <!--end::Name-->--}}
+{{--                            <!--begin::Position-->--}}
+{{--                            <div class="text-muted fs-6 fw-bold mt-1">QA Managers</div>--}}
+{{--                            <!--begin::Position-->--}}
+{{--                        </div>--}}
+{{--                        <!--end::Person-->--}}
+{{--                    </div>--}}
+{{--                    <!--end::Item-->--}}
+{{--                </div>--}}
+{{--                <!--end::Wrapper-->--}}
+{{--                <!--begin::Button-->--}}
+{{--                <button class="btn btn-icon btn-active-color-primary" id="kt_team_slider_prev">--}}
+{{--                    <!--begin::Svg Icon | path: icons/duotone/Navigation/Angle-left.svg-->--}}
+{{--                    <span class="svg-icon svg-icon-3x">--}}
+{{--								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">--}}
+{{--									<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">--}}
+{{--										<polygon points="0 0 24 0 24 24 0 24" />--}}
+{{--										<path d="M6.70710678,15.7071068 C6.31658249,16.0976311 5.68341751,16.0976311 5.29289322,15.7071068 C4.90236893,15.3165825 4.90236893,14.6834175 5.29289322,14.2928932 L11.2928932,8.29289322 C11.6714722,7.91431428 12.2810586,7.90106866 12.6757246,8.26284586 L18.6757246,13.7628459 C19.0828436,14.1360383 19.1103465,14.7686056 18.7371541,15.1757246 C18.3639617,15.5828436 17.7313944,15.6103465 17.3242754,15.2371541 L12.0300757,10.3841378 L6.70710678,15.7071068 Z" fill="#000000" fill-rule="nonzero" transform="translate(12.000003, 11.999999) scale(-1, 1) rotate(-270.000000) translate(-12.000003, -11.999999)" />--}}
+{{--									</g>--}}
+{{--								</svg>--}}
+{{--							</span>--}}
+{{--                    <!--end::Svg Icon-->--}}
+{{--                </button>--}}
+{{--                <!--end::Button-->--}}
+{{--                <!--begin::Button-->--}}
+{{--                <button class="btn btn-icon btn-active-color-primary" id="kt_team_slider_next">--}}
+{{--                    <!--begin::Svg Icon | path: icons/duotone/Navigation/Angle-right.svg-->--}}
+{{--                    <span class="svg-icon svg-icon-3x">--}}
+{{--								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">--}}
+{{--									<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">--}}
+{{--										<polygon points="0 0 24 0 24 24 0 24" />--}}
+{{--										<path d="M6.70710678,15.7071068 C6.31658249,16.0976311 5.68341751,16.0976311 5.29289322,15.7071068 C4.90236893,15.3165825 4.90236893,14.6834175 5.29289322,14.2928932 L11.2928932,8.29289322 C11.6714722,7.91431428 12.2810586,7.90106866 12.6757246,8.26284586 L18.6757246,13.7628459 C19.0828436,14.1360383 19.1103465,14.7686056 18.7371541,15.1757246 C18.3639617,15.5828436 17.7313944,15.6103465 17.3242754,15.2371541 L12.0300757,10.3841378 L6.70710678,15.7071068 Z" fill="#000000" fill-rule="nonzero" transform="translate(12.000003, 11.999999) rotate(-270.000000) translate(-12.000003, -11.999999)" />--}}
+{{--									</g>--}}
+{{--								</svg>--}}
+{{--							</span>--}}
+{{--                    <!--end::Svg Icon-->--}}
+{{--                </button>--}}
+{{--                <!--end::Button-->--}}
+{{--            </div>--}}
+{{--            <!--end::Slider-->--}}
+{{--        </div>--}}
+{{--        <!--end::Container-->--}}
+{{--    </div>--}}
     <!--end::Team Section-->
     <!--begin::Projects Section-->
     <div class="mb-lg-n15 position-relative z-index-2">
