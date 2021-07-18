@@ -4105,7 +4105,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <!--end::Page Scripts-->
 <script>
     function logoutCurrentSession() {
-        document.getElementById('logout-form').submit;
+        document.getElementById('logout-form').submit();
     }
 </script>
 </body>
