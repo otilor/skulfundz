@@ -4020,7 +4020,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <!--end::Demo Panel-->
 
 {{--Logout form--}}
-<form action="{{ route('logout') }}" method="POST">
+<form action="{{ route('logout') }}" method="POST" id="logoutForm">
     @csrf
 </form>
 
@@ -4105,7 +4105,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <!--end::Page Scripts-->
 <script>
     function logoutCurrentSession() {
-        document.getElementById('logout-form').submit();
+        document.getElementById('logoutForm').submit();
     }
 </script>
 </body>
