@@ -4,41 +4,12 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.8.1 (2021-05-20)
+ * Version: 5.4.1 (2020-07-08)
  */
-(function () {
+(function (domGlobals) {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
-
-    var typeOf = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var isString = isType('string');
-    var isObject = isType('object');
-    var isArray = isType('array');
-    var isBoolean = isSimpleType('boolean');
-    var isFunction = isSimpleType('function');
-    var isNumber = isSimpleType('number');
 
     var noop = function () {
     };
@@ -155,11 +126,39 @@
     var from = function (value) {
       return value === null || value === undefined ? NONE : some(value);
     };
-    var Optional = {
+    var Option = {
       some: some,
       none: none,
       from: from
     };
+
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var isString = isType('string');
+    var isArray = isType('array');
+    var isBoolean = isSimpleType('boolean');
+    var isFunction = isSimpleType('function');
+    var isNumber = isSimpleType('number');
 
     var nativeSlice = Array.prototype.slice;
     var nativePush = Array.prototype.push;
@@ -221,12 +220,12 @@
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
         if (pred(x, i)) {
-          return Optional.some(x);
+          return Option.some(x);
         } else if (until(x, i)) {
           break;
         }
       }
-      return Optional.none();
+      return Option.none();
     };
     var find = function (xs, pred) {
       return findUntil(xs, pred, never);
@@ -249,14 +248,18 @@
       r.reverse();
       return r;
     };
-    var get = function (xs, i) {
-      return i >= 0 && i < xs.length ? Optional.some(xs[i]) : Optional.none();
-    };
     var head = function (xs) {
-      return get(xs, 0);
+      return xs.length === 0 ? Option.none() : Option.some(xs[0]);
     };
     var last = function (xs) {
-      return get(xs, xs.length - 1);
+      return xs.length === 0 ? Option.none() : Option.some(xs[xs.length - 1]);
+    };
+
+    var compareDocumentPosition = function (a, b, match) {
+      return (a.compareDocumentPosition(b) & match) !== 0;
+    };
+    var documentPositionContainedBy = function (a, b) {
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_CONTAINED_BY);
     };
 
     var __assign = function () {
@@ -271,14 +274,6 @@
       };
       return __assign.apply(this, arguments);
     };
-    function __spreadArrays() {
-      for (var s = 0, i = 0, il = arguments.length; i < il; i++)
-        s += arguments[i].length;
-      for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-          r[k] = a[j];
-      return r;
-    }
 
     var cached = function (f) {
       var called = false;
@@ -293,28 +288,6 @@
           r = f.apply(null, args);
         }
         return r;
-      };
-    };
-
-    var DeviceType = function (os, browser, userAgent, mediaMatch) {
-      var isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
-      var isiPhone = os.isiOS() && !isiPad;
-      var isMobile = os.isiOS() || os.isAndroid();
-      var isTouch = isMobile || mediaMatch('(pointer:coarse)');
-      var isTablet = isiPad || !isiPhone && isMobile && mediaMatch('(min-device-width:768px)');
-      var isPhone = isiPhone || isMobile && !isTablet;
-      var iOSwebview = browser.isSafari() && os.isiOS() && /safari/i.test(userAgent) === false;
-      var isDesktop = !isPhone && !isTablet && !iOSwebview;
-      return {
-        isiPad: constant(isiPad),
-        isiPhone: constant(isiPhone),
-        isTablet: constant(isTablet),
-        isPhone: constant(isPhone),
-        isTouch: constant(isTouch),
-        isAndroid: os.isAndroid,
-        isiOS: os.isiOS,
-        isWebView: constant(iOSwebview),
-        isDesktop: constant(isDesktop)
       };
     };
 
@@ -362,6 +335,118 @@
       unknown: unknown
     };
 
+    var edge = 'Edge';
+    var chrome = 'Chrome';
+    var ie = 'IE';
+    var opera = 'Opera';
+    var firefox = 'Firefox';
+    var safari = 'Safari';
+    var unknown$1 = function () {
+      return nu$1({
+        current: undefined,
+        version: Version.unknown()
+      });
+    };
+    var nu$1 = function (info) {
+      var current = info.current;
+      var version = info.version;
+      var isBrowser = function (name) {
+        return function () {
+          return current === name;
+        };
+      };
+      return {
+        current: current,
+        version: version,
+        isEdge: isBrowser(edge),
+        isChrome: isBrowser(chrome),
+        isIE: isBrowser(ie),
+        isOpera: isBrowser(opera),
+        isFirefox: isBrowser(firefox),
+        isSafari: isBrowser(safari)
+      };
+    };
+    var Browser = {
+      unknown: unknown$1,
+      nu: nu$1,
+      edge: constant(edge),
+      chrome: constant(chrome),
+      ie: constant(ie),
+      opera: constant(opera),
+      firefox: constant(firefox),
+      safari: constant(safari)
+    };
+
+    var windows = 'Windows';
+    var ios = 'iOS';
+    var android = 'Android';
+    var linux = 'Linux';
+    var osx = 'OSX';
+    var solaris = 'Solaris';
+    var freebsd = 'FreeBSD';
+    var chromeos = 'ChromeOS';
+    var unknown$2 = function () {
+      return nu$2({
+        current: undefined,
+        version: Version.unknown()
+      });
+    };
+    var nu$2 = function (info) {
+      var current = info.current;
+      var version = info.version;
+      var isOS = function (name) {
+        return function () {
+          return current === name;
+        };
+      };
+      return {
+        current: current,
+        version: version,
+        isWindows: isOS(windows),
+        isiOS: isOS(ios),
+        isAndroid: isOS(android),
+        isOSX: isOS(osx),
+        isLinux: isOS(linux),
+        isSolaris: isOS(solaris),
+        isFreeBSD: isOS(freebsd),
+        isChromeOS: isOS(chromeos)
+      };
+    };
+    var OperatingSystem = {
+      unknown: unknown$2,
+      nu: nu$2,
+      windows: constant(windows),
+      ios: constant(ios),
+      android: constant(android),
+      linux: constant(linux),
+      osx: constant(osx),
+      solaris: constant(solaris),
+      freebsd: constant(freebsd),
+      chromeos: constant(chromeos)
+    };
+
+    var DeviceType = function (os, browser, userAgent, mediaMatch) {
+      var isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
+      var isiPhone = os.isiOS() && !isiPad;
+      var isMobile = os.isiOS() || os.isAndroid();
+      var isTouch = isMobile || mediaMatch('(pointer:coarse)');
+      var isTablet = isiPad || !isiPhone && isMobile && mediaMatch('(min-device-width:768px)');
+      var isPhone = isiPhone || isMobile && !isTablet;
+      var iOSwebview = browser.isSafari() && os.isiOS() && /safari/i.test(userAgent) === false;
+      var isDesktop = !isPhone && !isTablet && !iOSwebview;
+      return {
+        isiPad: constant(isiPad),
+        isiPhone: constant(isiPhone),
+        isTablet: constant(isTablet),
+        isPhone: constant(isPhone),
+        isTouch: constant(isTouch),
+        isAndroid: os.isAndroid,
+        isiOS: os.isiOS,
+        isWebView: constant(iOSwebview),
+        isDesktop: constant(isDesktop)
+      };
+    };
+
     var detect$1 = function (candidates, userAgent) {
       var agent = String(userAgent).toLowerCase();
       return find(candidates, function (candidate) {
@@ -393,18 +478,6 @@
 
     var contains = function (str, substr) {
       return str.indexOf(substr) !== -1;
-    };
-    var blank = function (r) {
-      return function (s) {
-        return s.replace(r, '');
-      };
-    };
-    var trim = blank(/^\s+|\s+$/g);
-    var isNotEmpty = function (s) {
-      return s.length > 0;
-    };
-    var isEmpty = function (s) {
-      return !isNotEmpty(s);
     };
 
     var normalVersionRegex = /.*?version\/\ ?([0-9]+)\.([0-9]+).*/;
@@ -518,96 +591,6 @@
       oses: constant(oses)
     };
 
-    var edge = 'Edge';
-    var chrome = 'Chrome';
-    var ie = 'IE';
-    var opera = 'Opera';
-    var firefox = 'Firefox';
-    var safari = 'Safari';
-    var unknown$1 = function () {
-      return nu$1({
-        current: undefined,
-        version: Version.unknown()
-      });
-    };
-    var nu$1 = function (info) {
-      var current = info.current;
-      var version = info.version;
-      var isBrowser = function (name) {
-        return function () {
-          return current === name;
-        };
-      };
-      return {
-        current: current,
-        version: version,
-        isEdge: isBrowser(edge),
-        isChrome: isBrowser(chrome),
-        isIE: isBrowser(ie),
-        isOpera: isBrowser(opera),
-        isFirefox: isBrowser(firefox),
-        isSafari: isBrowser(safari)
-      };
-    };
-    var Browser = {
-      unknown: unknown$1,
-      nu: nu$1,
-      edge: constant(edge),
-      chrome: constant(chrome),
-      ie: constant(ie),
-      opera: constant(opera),
-      firefox: constant(firefox),
-      safari: constant(safari)
-    };
-
-    var windows = 'Windows';
-    var ios = 'iOS';
-    var android = 'Android';
-    var linux = 'Linux';
-    var osx = 'OSX';
-    var solaris = 'Solaris';
-    var freebsd = 'FreeBSD';
-    var chromeos = 'ChromeOS';
-    var unknown$2 = function () {
-      return nu$2({
-        current: undefined,
-        version: Version.unknown()
-      });
-    };
-    var nu$2 = function (info) {
-      var current = info.current;
-      var version = info.version;
-      var isOS = function (name) {
-        return function () {
-          return current === name;
-        };
-      };
-      return {
-        current: current,
-        version: version,
-        isWindows: isOS(windows),
-        isiOS: isOS(ios),
-        isAndroid: isOS(android),
-        isOSX: isOS(osx),
-        isLinux: isOS(linux),
-        isSolaris: isOS(solaris),
-        isFreeBSD: isOS(freebsd),
-        isChromeOS: isOS(chromeos)
-      };
-    };
-    var OperatingSystem = {
-      unknown: unknown$2,
-      nu: nu$2,
-      windows: constant(windows),
-      ios: constant(ios),
-      android: constant(android),
-      linux: constant(linux),
-      osx: constant(osx),
-      solaris: constant(solaris),
-      freebsd: constant(freebsd),
-      chromeos: constant(chromeos)
-    };
-
     var detect$2 = function (userAgent, mediaMatch) {
       var browsers = PlatformInfo.browsers();
       var oses = PlatformInfo.oses();
@@ -623,41 +606,32 @@
     var PlatformDetection = { detect: detect$2 };
 
     var mediaMatch = function (query) {
-      return window.matchMedia(query).matches;
+      return domGlobals.window.matchMedia(query).matches;
     };
     var platform = cached(function () {
-      return PlatformDetection.detect(navigator.userAgent, mediaMatch);
+      return PlatformDetection.detect(domGlobals.navigator.userAgent, mediaMatch);
     });
     var detect$3 = function () {
       return platform();
     };
 
-    var compareDocumentPosition = function (a, b, match) {
-      return (a.compareDocumentPosition(b) & match) !== 0;
-    };
-    var documentPositionContainedBy = function (a, b) {
-      return compareDocumentPosition(a, b, Node.DOCUMENT_POSITION_CONTAINED_BY);
-    };
-
-    var ELEMENT = 1;
-
     var fromHtml = function (html, scope) {
-      var doc = scope || document;
+      var doc = scope || domGlobals.document;
       var div = doc.createElement('div');
       div.innerHTML = html;
       if (!div.hasChildNodes() || div.childNodes.length > 1) {
-        console.error('HTML does not have a single root node', html);
+        domGlobals.console.error('HTML does not have a single root node', html);
         throw new Error('HTML must have a single root node');
       }
       return fromDom(div.childNodes[0]);
     };
     var fromTag = function (tag, scope) {
-      var doc = scope || document;
+      var doc = scope || domGlobals.document;
       var node = doc.createElement(tag);
       return fromDom(node);
     };
     var fromText = function (text, scope) {
-      var doc = scope || document;
+      var doc = scope || domGlobals.document;
       var node = doc.createTextNode(text);
       return fromDom(node);
     };
@@ -665,12 +639,13 @@
       if (node === null || node === undefined) {
         throw new Error('Node cannot be null or undefined');
       }
-      return { dom: node };
+      return { dom: constant(node) };
     };
     var fromPoint = function (docElm, x, y) {
-      return Optional.from(docElm.dom.elementFromPoint(x, y)).map(fromDom);
+      var doc = docElm.dom();
+      return Option.from(doc.elementFromPoint(x, y)).map(fromDom);
     };
-    var SugarElement = {
+    var Element = {
       fromHtml: fromHtml,
       fromTag: fromTag,
       fromText: fromText,
@@ -678,8 +653,10 @@
       fromPoint: fromPoint
     };
 
+    var ELEMENT = 1;
+
     var is = function (element, selector) {
-      var dom = element.dom;
+      var dom = element.dom();
       if (dom.nodeType !== ELEMENT) {
         return false;
       } else {
@@ -699,15 +676,15 @@
     };
 
     var eq = function (e1, e2) {
-      return e1.dom === e2.dom;
+      return e1.dom() === e2.dom();
     };
     var regularContains = function (e1, e2) {
-      var d1 = e1.dom;
-      var d2 = e2.dom;
+      var d1 = e1.dom();
+      var d2 = e2.dom();
       return d1 === d2 ? false : d1.contains(d2);
     };
     var ieContains = function (e1, e2) {
-      return documentPositionContainedBy(e1.dom, e2.dom);
+      return documentPositionContainedBy(e1.dom(), e2.dom());
     };
     var contains$1 = function (e1, e2) {
       return detect$3().browser.isIE() ? ieContains(e1, e2) : regularContains(e1, e2);
@@ -720,41 +697,27 @@
 
     var global$3 = tinymce.util.Tools.resolve('tinymce.util.VK');
 
-    var keys = Object.keys;
-    var each$1 = function (obj, f) {
-      var props = keys(obj);
-      for (var k = 0, len = props.length; k < len; k++) {
-        var i = props[k];
-        var x = obj[i];
-        f(x, i);
-      }
-    };
-    var objAcc = function (r) {
-      return function (x, i) {
-        r[i] = x;
-      };
-    };
-    var internalFilter = function (obj, pred, onTrue, onFalse) {
-      var r = {};
-      each$1(obj, function (x, i) {
-        (pred(x, i) ? onTrue : onFalse)(x, i);
-      });
-      return r;
-    };
-    var filter$1 = function (obj, pred) {
-      var t = {};
-      internalFilter(obj, pred, objAcc(t), noop);
-      return t;
+    var lift2 = function (oa, ob, f) {
+      return oa.isSome() && ob.isSome() ? Option.some(f(oa.getOrDie(), ob.getOrDie())) : Option.none();
     };
 
-    var Global = typeof window !== 'undefined' ? window : Function('return this;')();
+    var fromElements = function (elements, scope) {
+      var doc = scope || domGlobals.document;
+      var fragment = doc.createDocumentFragment();
+      each(elements, function (element) {
+        fragment.appendChild(element.dom());
+      });
+      return Element.fromDom(fragment);
+    };
+
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
 
     var name = function (element) {
-      var r = element.dom.nodeName;
+      var r = element.dom().nodeName;
       return r.toLowerCase();
     };
     var type = function (element) {
-      return element.dom.nodeType;
+      return element.dom().nodeType;
     };
     var isType$1 = function (t) {
       return function (element) {
@@ -763,52 +726,31 @@
     };
     var isElement = isType$1(ELEMENT);
 
-    var rawSet = function (dom, key, value) {
-      if (isString(value) || isBoolean(value) || isNumber(value)) {
-        dom.setAttribute(key, value + '');
-      } else {
-        console.error('Invalid call to Attribute.set. Key ', key, ':: Value ', value, ':: Element ', dom);
-        throw new Error('Attribute value was not simple');
-      }
-    };
-    var setAll = function (element, attrs) {
-      var dom = element.dom;
-      each$1(attrs, function (v, k) {
-        rawSet(dom, k, v);
-      });
-    };
-    var clone = function (element) {
-      return foldl(element.dom.attributes, function (acc, attr) {
-        acc[attr.name] = attr.value;
-        return acc;
-      }, {});
-    };
-
     var parent = function (element) {
-      return Optional.from(element.dom.parentNode).map(SugarElement.fromDom);
+      return Option.from(element.dom().parentNode).map(Element.fromDom);
     };
     var children = function (element) {
-      return map(element.dom.childNodes, SugarElement.fromDom);
+      return map(element.dom().childNodes, Element.fromDom);
     };
     var child = function (element, index) {
-      var cs = element.dom.childNodes;
-      return Optional.from(cs[index]).map(SugarElement.fromDom);
+      var cs = element.dom().childNodes;
+      return Option.from(cs[index]).map(Element.fromDom);
     };
     var firstChild = function (element) {
       return child(element, 0);
     };
     var lastChild = function (element) {
-      return child(element, element.dom.childNodes.length - 1);
+      return child(element, element.dom().childNodes.length - 1);
     };
 
     var before = function (marker, element) {
       var parent$1 = parent(marker);
       parent$1.each(function (v) {
-        v.dom.insertBefore(element.dom, marker.dom);
+        v.dom().insertBefore(element.dom(), marker.dom());
       });
     };
     var append = function (parent, element) {
-      parent.dom.appendChild(element.dom);
+      parent.dom().appendChild(element.dom());
     };
 
     var before$1 = function (marker, elements) {
@@ -823,34 +765,20 @@
     };
 
     var remove = function (element) {
-      var dom = element.dom;
+      var dom = element.dom();
       if (dom.parentNode !== null) {
         dom.parentNode.removeChild(dom);
       }
     };
 
-    var clone$1 = function (original, isDeep) {
-      return SugarElement.fromDom(original.dom.cloneNode(isDeep));
-    };
-    var deep = function (original) {
-      return clone$1(original, true);
-    };
-    var shallowAs = function (original, tag) {
-      var nu = SugarElement.fromTag(tag);
-      var attributes = clone(original);
-      setAll(nu, attributes);
-      return nu;
-    };
-    var mutate = function (original, tag) {
-      var nu = shallowAs(original, tag);
-      before(original, nu);
-      var children$1 = children(original);
-      append$1(nu, children$1);
-      remove(original);
-      return nu;
+    var fireListEvent = function (editor, action, element) {
+      return editor.fire('ListMutation', {
+        action: action,
+        element: element
+      });
     };
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.dom.DomQuery');
 
     var global$5 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
@@ -887,9 +815,12 @@
       if (!isBr(node)) {
         return false;
       }
-      return dom.isBlock(node.nextSibling) && !isBr(node.previousSibling);
+      if (dom.isBlock(node.nextSibling) && !isBr(node.previousSibling)) {
+        return true;
+      }
+      return false;
     };
-    var isEmpty$1 = function (dom, elm, keepBookmarks) {
+    var isEmpty = function (dom, elm, keepBookmarks) {
       var empty = dom.isEmpty(elm);
       if (keepBookmarks && dom.select('span[data-mce-type=bookmark]', elm).length > 0) {
         return false;
@@ -898,6 +829,70 @@
     };
     var isChildOfBody = function (dom, elm) {
       return dom.isChildOf(elm, dom.getRoot());
+    };
+
+    var getParentList = function (editor, node) {
+      var selectionStart = node || editor.selection.getStart(true);
+      return editor.dom.getParent(selectionStart, 'OL,UL,DL', getClosestListRootElm(editor, selectionStart));
+    };
+    var isParentListSelected = function (parentList, selectedBlocks) {
+      return parentList && selectedBlocks.length === 1 && selectedBlocks[0] === parentList;
+    };
+    var findSubLists = function (parentList) {
+      return global$5.grep(parentList.querySelectorAll('ol,ul,dl'), function (elm) {
+        return isListNode(elm);
+      });
+    };
+    var getSelectedSubLists = function (editor) {
+      var parentList = getParentList(editor);
+      var selectedBlocks = editor.selection.getSelectedBlocks();
+      if (isParentListSelected(parentList, selectedBlocks)) {
+        return findSubLists(parentList);
+      } else {
+        return global$5.grep(selectedBlocks, function (elm) {
+          return isListNode(elm) && parentList !== elm;
+        });
+      }
+    };
+    var findParentListItemsNodes = function (editor, elms) {
+      var listItemsElms = global$5.map(elms, function (elm) {
+        var parentLi = editor.dom.getParent(elm, 'li,dd,dt', getClosestListRootElm(editor, elm));
+        return parentLi ? parentLi : elm;
+      });
+      return global$4.unique(listItemsElms);
+    };
+    var getSelectedListItems = function (editor) {
+      var selectedBlocks = editor.selection.getSelectedBlocks();
+      return global$5.grep(findParentListItemsNodes(editor, selectedBlocks), function (block) {
+        return isListItemNode(block);
+      });
+    };
+    var getSelectedDlItems = function (editor) {
+      return filter(getSelectedListItems(editor), isDlItemNode);
+    };
+    var getClosestListRootElm = function (editor, elm) {
+      var parentTableCell = editor.dom.getParents(elm, 'TD,TH');
+      var root = parentTableCell.length > 0 ? parentTableCell[0] : editor.getBody();
+      return root;
+    };
+    var findLastParentListNode = function (editor, elm) {
+      var parentLists = editor.dom.getParents(elm, 'ol,ul', getClosestListRootElm(editor, elm));
+      return last(parentLists);
+    };
+    var getSelectedLists = function (editor) {
+      var firstList = findLastParentListNode(editor, editor.selection.getStart());
+      var subsequentLists = filter(editor.selection.getSelectedBlocks(), isOlUlNode);
+      return firstList.toArray().concat(subsequentLists);
+    };
+    var getSelectedListRoots = function (editor) {
+      var selectedLists = getSelectedLists(editor);
+      return getUniqueListRoots(editor, selectedLists);
+    };
+    var getUniqueListRoots = function (editor, lists) {
+      var listRoots = map(lists, function (list) {
+        return findLastParentListNode(editor, list).getOr(list);
+      });
+      return global$4.unique(listRoots);
     };
 
     var shouldIndentOnTab = function (editor) {
@@ -964,194 +959,63 @@
       return fragment;
     };
 
-    var DOM = global$4.DOM;
-    var splitList = function (editor, ul, li) {
-      var removeAndKeepBookmarks = function (targetNode) {
-        global$5.each(bookmarks, function (node) {
-          targetNode.parentNode.insertBefore(node, li.parentNode);
-        });
-        DOM.remove(targetNode);
-      };
-      var bookmarks = DOM.select('span[data-mce-type="bookmark"]', ul);
-      var newBlock = createTextBlock(editor, li);
-      var tmpRng = DOM.createRng();
-      tmpRng.setStartAfter(li);
-      tmpRng.setEndAfter(ul);
-      var fragment = tmpRng.extractContents();
-      for (var node = fragment.firstChild; node; node = node.firstChild) {
-        if (node.nodeName === 'LI' && editor.dom.isEmpty(node)) {
-          DOM.remove(node);
-          break;
-        }
-      }
-      if (!editor.dom.isEmpty(fragment)) {
-        DOM.insertAfter(fragment, ul);
-      }
-      DOM.insertAfter(newBlock, ul);
-      if (isEmpty$1(editor.dom, li.parentNode)) {
-        removeAndKeepBookmarks(li.parentNode);
-      }
-      DOM.remove(li);
-      if (isEmpty$1(editor.dom, ul)) {
-        DOM.remove(ul);
+    var keys = Object.keys;
+    var each$1 = function (obj, f) {
+      var props = keys(obj);
+      for (var k = 0, len = props.length; k < len; k++) {
+        var i = props[k];
+        var x = obj[i];
+        f(x, i);
       }
     };
-
-    var outdentDlItem = function (editor, item) {
-      if (is$1(item, 'dd')) {
-        mutate(item, 'dt');
-      } else if (is$1(item, 'dt')) {
-        parent(item).each(function (dl) {
-          return splitList(editor, dl.dom, item.dom);
-        });
-      }
-    };
-    var indentDlItem = function (item) {
-      if (is$1(item, 'dt')) {
-        mutate(item, 'dd');
-      }
-    };
-    var dlIndentation = function (editor, indentation, dlItems) {
-      if (indentation === 'Indent') {
-        each(dlItems, indentDlItem);
-      } else {
-        each(dlItems, function (item) {
-          return outdentDlItem(editor, item);
-        });
-      }
-    };
-
-    var getNormalizedPoint = function (container, offset) {
-      if (isTextNode(container)) {
-        return {
-          container: container,
-          offset: offset
-        };
-      }
-      var node = global$1.getNode(container, offset);
-      if (isTextNode(node)) {
-        return {
-          container: node,
-          offset: offset >= container.childNodes.length ? node.data.length : 0
-        };
-      } else if (node.previousSibling && isTextNode(node.previousSibling)) {
-        return {
-          container: node.previousSibling,
-          offset: node.previousSibling.data.length
-        };
-      } else if (node.nextSibling && isTextNode(node.nextSibling)) {
-        return {
-          container: node.nextSibling,
-          offset: 0
-        };
-      }
-      return {
-        container: container,
-        offset: offset
+    var objAcc = function (r) {
+      return function (x, i) {
+        r[i] = x;
       };
     };
-    var normalizeRange = function (rng) {
-      var outRng = rng.cloneRange();
-      var rangeStart = getNormalizedPoint(rng.startContainer, rng.startOffset);
-      outRng.setStart(rangeStart.container, rangeStart.offset);
-      var rangeEnd = getNormalizedPoint(rng.endContainer, rng.endOffset);
-      outRng.setEnd(rangeEnd.container, rangeEnd.offset);
-      return outRng;
-    };
-
-    var global$6 = tinymce.util.Tools.resolve('tinymce.dom.DomQuery');
-
-    var getParentList = function (editor, node) {
-      var selectionStart = node || editor.selection.getStart(true);
-      return editor.dom.getParent(selectionStart, 'OL,UL,DL', getClosestListRootElm(editor, selectionStart));
-    };
-    var isParentListSelected = function (parentList, selectedBlocks) {
-      return parentList && selectedBlocks.length === 1 && selectedBlocks[0] === parentList;
-    };
-    var findSubLists = function (parentList) {
-      return global$5.grep(parentList.querySelectorAll('ol,ul,dl'), function (elm) {
-        return isListNode(elm);
+    var internalFilter = function (obj, pred, onTrue, onFalse) {
+      var r = {};
+      each$1(obj, function (x, i) {
+        (pred(x, i) ? onTrue : onFalse)(x, i);
       });
+      return r;
     };
-    var getSelectedSubLists = function (editor) {
-      var parentList = getParentList(editor);
-      var selectedBlocks = editor.selection.getSelectedBlocks();
-      if (isParentListSelected(parentList, selectedBlocks)) {
-        return findSubLists(parentList);
+    var filter$1 = function (obj, pred) {
+      var t = {};
+      internalFilter(obj, pred, objAcc(t), noop);
+      return t;
+    };
+
+    var rawSet = function (dom, key, value) {
+      if (isString(value) || isBoolean(value) || isNumber(value)) {
+        dom.setAttribute(key, value + '');
       } else {
-        return global$5.grep(selectedBlocks, function (elm) {
-          return isListNode(elm) && parentList !== elm;
-        });
+        domGlobals.console.error('Invalid call to Attr.set. Key ', key, ':: Value ', value, ':: Element ', dom);
+        throw new Error('Attribute value was not simple');
       }
     };
-    var findParentListItemsNodes = function (editor, elms) {
-      var listItemsElms = global$5.map(elms, function (elm) {
-        var parentLi = editor.dom.getParent(elm, 'li,dd,dt', getClosestListRootElm(editor, elm));
-        return parentLi ? parentLi : elm;
-      });
-      return global$6.unique(listItemsElms);
-    };
-    var getSelectedListItems = function (editor) {
-      var selectedBlocks = editor.selection.getSelectedBlocks();
-      return global$5.grep(findParentListItemsNodes(editor, selectedBlocks), function (block) {
-        return isListItemNode(block);
+    var setAll = function (element, attrs) {
+      var dom = element.dom();
+      each$1(attrs, function (v, k) {
+        rawSet(dom, k, v);
       });
     };
-    var getSelectedDlItems = function (editor) {
-      return filter(getSelectedListItems(editor), isDlItemNode);
-    };
-    var getClosestListRootElm = function (editor, elm) {
-      var parentTableCell = editor.dom.getParents(elm, 'TD,TH');
-      var root = parentTableCell.length > 0 ? parentTableCell[0] : editor.getBody();
-      return root;
-    };
-    var findLastParentListNode = function (editor, elm) {
-      var parentLists = editor.dom.getParents(elm, 'ol,ul', getClosestListRootElm(editor, elm));
-      return last(parentLists);
-    };
-    var getSelectedLists = function (editor) {
-      var firstList = findLastParentListNode(editor, editor.selection.getStart());
-      var subsequentLists = filter(editor.selection.getSelectedBlocks(), isOlUlNode);
-      return firstList.toArray().concat(subsequentLists);
-    };
-    var getSelectedListRoots = function (editor) {
-      var selectedLists = getSelectedLists(editor);
-      return getUniqueListRoots(editor, selectedLists);
-    };
-    var getUniqueListRoots = function (editor, lists) {
-      var listRoots = map(lists, function (list) {
-        return findLastParentListNode(editor, list).getOr(list);
-      });
-      return global$6.unique(listRoots);
-    };
-
-    var lift2 = function (oa, ob, f) {
-      return oa.isSome() && ob.isSome() ? Optional.some(f(oa.getOrDie(), ob.getOrDie())) : Optional.none();
-    };
-
-    var fromElements = function (elements, scope) {
-      var doc = scope || document;
-      var fragment = doc.createDocumentFragment();
-      each(elements, function (element) {
-        fragment.appendChild(element.dom);
-      });
-      return SugarElement.fromDom(fragment);
-    };
-
-    var fireListEvent = function (editor, action, element) {
-      return editor.fire('ListMutation', {
-        action: action,
-        element: element
-      });
+    var clone = function (element) {
+      return foldl(element.dom().attributes, function (acc, attr) {
+        acc[attr.name] = attr.value;
+        return acc;
+      }, {});
     };
 
     var isSupported = function (dom) {
       return dom.style !== undefined && isFunction(dom.style.getPropertyValue);
     };
 
+    var supported = isFunction(domGlobals.Element.prototype.attachShadow) && isFunction(domGlobals.Node.prototype.getRootNode);
+
     var internalSet = function (dom, property, value) {
       if (!isString(value)) {
-        console.error('Invalid call to CSS.set. Property ', property, ':: Value ', value, ':: Element ', dom);
+        domGlobals.console.error('Invalid call to CSS.set. Property ', property, ':: Value ', value, ':: Element ', dom);
         throw new Error('CSS value must be a string: ' + value);
       }
       if (isSupported(dom)) {
@@ -1159,8 +1023,29 @@
       }
     };
     var set = function (element, property, value) {
-      var dom = element.dom;
+      var dom = element.dom();
       internalSet(dom, property, value);
+    };
+
+    var clone$1 = function (original, isDeep) {
+      return Element.fromDom(original.dom().cloneNode(isDeep));
+    };
+    var deep = function (original) {
+      return clone$1(original, true);
+    };
+    var shallowAs = function (original, tag) {
+      var nu = Element.fromTag(tag);
+      var attributes = clone(original);
+      setAll(nu, attributes);
+      return nu;
+    };
+    var mutate = function (original, tag) {
+      var nu = shallowAs(original, tag);
+      before(original, nu);
+      var children$1 = children(original);
+      append$1(nu, children$1);
+      remove(original);
+      return nu;
     };
 
     var joinSegment = function (parent, child) {
@@ -1176,8 +1061,8 @@
     };
     var createSegment = function (scope, listType) {
       var segment = {
-        list: SugarElement.fromTag(listType, scope),
-        item: SugarElement.fromTag('li', scope)
+        list: Element.fromTag(listType, scope),
+        item: Element.fromTag('li', scope)
       };
       append(segment.list, segment.item);
       return segment;
@@ -1206,7 +1091,7 @@
       setAll(segment.list, entry.listAttributes);
     };
     var createItem = function (scope, attr, content) {
-      var item = SugarElement.fromTag('li', scope);
+      var item = Element.fromTag('li', scope);
       setAll(item, attr);
       append$1(item, content);
       return item;
@@ -1380,7 +1265,7 @@
       var normalizedEntries = normalizeEntries(entries);
       return map(normalizedEntries, function (entry) {
         var content = fromElements(entry.content);
-        return SugarElement.fromDom(createTextBlock(editor, content.dom));
+        return Element.fromDom(createTextBlock(editor, content.dom()));
       });
     };
     var indentedComposer = function (editor, entries) {
@@ -1399,7 +1284,7 @@
       });
     };
     var getItemSelection = function (editor) {
-      var selectedListItems = map(getSelectedListItems(editor), SugarElement.fromDom);
+      var selectedListItems = map(getSelectedListItems(editor), Element.fromDom);
       return lift2(find(selectedListItems, not(hasFirstChildList)), find(reverse(selectedListItems), not(hasFirstChildList)), function (start, end) {
         return {
           start: start,
@@ -1413,16 +1298,113 @@
         indentSelectedEntries(entrySet.entries, indentation);
         var composedLists = composeEntries(editor, entrySet.entries);
         each(composedLists, function (composedList) {
-          fireListEvent(editor, indentation === 'Indent' ? 'IndentList' : 'OutdentList', composedList.dom);
+          fireListEvent(editor, indentation === 'Indent' ? 'IndentList' : 'OutdentList', composedList.dom());
         });
         before$1(entrySet.sourceList, composedLists);
         remove(entrySet.sourceList);
       });
     };
 
+    var global$6 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+
+    var DOM = global$6.DOM;
+    var splitList = function (editor, ul, li) {
+      var removeAndKeepBookmarks = function (targetNode) {
+        global$5.each(bookmarks, function (node) {
+          targetNode.parentNode.insertBefore(node, li.parentNode);
+        });
+        DOM.remove(targetNode);
+      };
+      var bookmarks = DOM.select('span[data-mce-type="bookmark"]', ul);
+      var newBlock = createTextBlock(editor, li);
+      var tmpRng = DOM.createRng();
+      tmpRng.setStartAfter(li);
+      tmpRng.setEndAfter(ul);
+      var fragment = tmpRng.extractContents();
+      for (var node = fragment.firstChild; node; node = node.firstChild) {
+        if (node.nodeName === 'LI' && editor.dom.isEmpty(node)) {
+          DOM.remove(node);
+          break;
+        }
+      }
+      if (!editor.dom.isEmpty(fragment)) {
+        DOM.insertAfter(fragment, ul);
+      }
+      DOM.insertAfter(newBlock, ul);
+      if (isEmpty(editor.dom, li.parentNode)) {
+        removeAndKeepBookmarks(li.parentNode);
+      }
+      DOM.remove(li);
+      if (isEmpty(editor.dom, ul)) {
+        DOM.remove(ul);
+      }
+    };
+
+    var outdentDlItem = function (editor, item) {
+      if (is$1(item, 'dd')) {
+        mutate(item, 'dt');
+      } else if (is$1(item, 'dt')) {
+        parent(item).each(function (dl) {
+          return splitList(editor, dl.dom(), item.dom());
+        });
+      }
+    };
+    var indentDlItem = function (item) {
+      if (is$1(item, 'dt')) {
+        mutate(item, 'dd');
+      }
+    };
+    var dlIndentation = function (editor, indentation, dlItems) {
+      if (indentation === 'Indent') {
+        each(dlItems, indentDlItem);
+      } else {
+        each(dlItems, function (item) {
+          return outdentDlItem(editor, item);
+        });
+      }
+    };
+
+    var getNormalizedPoint = function (container, offset) {
+      if (isTextNode(container)) {
+        return {
+          container: container,
+          offset: offset
+        };
+      }
+      var node = global$1.getNode(container, offset);
+      if (isTextNode(node)) {
+        return {
+          container: node,
+          offset: offset >= container.childNodes.length ? node.data.length : 0
+        };
+      } else if (node.previousSibling && isTextNode(node.previousSibling)) {
+        return {
+          container: node.previousSibling,
+          offset: node.previousSibling.data.length
+        };
+      } else if (node.nextSibling && isTextNode(node.nextSibling)) {
+        return {
+          container: node.nextSibling,
+          offset: 0
+        };
+      }
+      return {
+        container: container,
+        offset: offset
+      };
+    };
+    var normalizeRange = function (rng) {
+      var outRng = rng.cloneRange();
+      var rangeStart = getNormalizedPoint(rng.startContainer, rng.startOffset);
+      outRng.setStart(rangeStart.container, rangeStart.offset);
+      var rangeEnd = getNormalizedPoint(rng.endContainer, rng.endOffset);
+      outRng.setEnd(rangeEnd.container, rangeEnd.offset);
+      return outRng;
+    };
+
     var selectionIndentation = function (editor, indentation) {
-      var lists = map(getSelectedListRoots(editor), SugarElement.fromDom);
-      var dlItems = map(getSelectedDlItems(editor), SugarElement.fromDom);
+      var lists = map(getSelectedListRoots(editor), Element.fromDom);
+      var dlItems = map(getSelectedDlItems(editor), Element.fromDom);
       var isHandled = false;
       if (lists.length || dlItems.length) {
         var bookmark = editor.selection.getBookmark();
@@ -1447,7 +1429,7 @@
 
     var global$7 = tinymce.util.Tools.resolve('tinymce.dom.BookmarkManager');
 
-    var DOM$1 = global$4.DOM;
+    var DOM$1 = global$6.DOM;
     var createBookmark = function (rng) {
       var bookmark = {};
       var setupEndPoint = function (start) {
@@ -1479,7 +1461,7 @@
       return bookmark;
     };
     var resolveBookmark = function (bookmark) {
-      var restoreEndPoint = function (start) {
+      function restoreEndPoint(start) {
         var container, offset, node;
         var nodeIndex = function (container) {
           var node = container.parentNode.firstChild, idx = 0;
@@ -1509,7 +1491,7 @@
         }
         bookmark[start ? 'startContainer' : 'endContainer'] = container;
         bookmark[start ? 'startOffset' : 'endOffset'] = offset;
-      };
+      }
       restoreEndPoint(true);
       restoreEndPoint();
       var rng = DOM$1.createRng();
@@ -1535,17 +1517,17 @@
       return /\btox\-/.test(list.className);
     };
     var listState = function (editor, listName, activate) {
-      var nodeChangeHandler = function (e) {
-        var inList = findUntil(e.parents, isListNode, isTableCellNode).filter(function (list) {
-          return list.nodeName === listName && !isCustomList(list);
-        }).isSome();
-        activate(inList);
-      };
-      var parents = editor.dom.getParents(editor.selection.getNode());
-      nodeChangeHandler({ parents: parents });
-      editor.on('NodeChange', nodeChangeHandler);
       return function () {
-        return editor.off('NodeChange', nodeChangeHandler);
+        var nodeChangeHandler = function (e) {
+          var inList = findUntil(e.parents, isListNode, isTableCellNode).filter(function (list) {
+            return list.nodeName === listName && !isCustomList(list);
+          }).isSome();
+          activate(inList);
+        };
+        editor.on('NodeChange', nodeChangeHandler);
+        return function () {
+          return editor.off('NodeChange', nodeChangeHandler);
+        };
       };
     };
 
@@ -1621,7 +1603,7 @@
         }
         var nextSibling = node.nextSibling;
         if (global$7.isBookmarkNode(node)) {
-          if (isListNode(nextSibling) || isTextBlock(editor, nextSibling) || !nextSibling && node.parentNode === root) {
+          if (isTextBlock(editor, nextSibling) || !nextSibling && node.parentNode === root) {
             block = null;
             return;
           }
@@ -1642,6 +1624,9 @@
       return sibStyle === detailStyle;
     };
     var applyList = function (editor, listName, detail) {
+      if (detail === void 0) {
+        detail = {};
+      }
       var rng = editor.selection.getRng();
       var listItemName = 'LI';
       var root = getClosestListRootElm(editor, editor.selection.getStart(true));
@@ -1654,37 +1639,33 @@
         listItemName = 'DT';
       }
       var bookmark = createBookmark(rng);
-      var selectedTextBlocks = getSelectedTextBlocks(editor, rng, root);
-      global$5.each(selectedTextBlocks, function (block) {
+      global$5.each(getSelectedTextBlocks(editor, rng, root), function (block) {
         var listBlock;
         var sibling = block.previousSibling;
-        var parent = block.parentNode;
-        if (!isListItemNode(parent)) {
-          if (sibling && isListNode(sibling) && sibling.nodeName === listName && hasCompatibleStyle(dom, sibling, detail)) {
-            listBlock = sibling;
-            block = dom.rename(block, listItemName);
-            sibling.appendChild(block);
-          } else {
-            listBlock = dom.create(listName);
-            block.parentNode.insertBefore(listBlock, block);
-            listBlock.appendChild(block);
-            block = dom.rename(block, listItemName);
-          }
-          removeStyles(dom, block, [
-            'margin',
-            'margin-right',
-            'margin-bottom',
-            'margin-left',
-            'margin-top',
-            'padding',
-            'padding-right',
-            'padding-bottom',
-            'padding-left',
-            'padding-top'
-          ]);
-          updateListWithDetails(dom, listBlock, detail);
-          mergeWithAdjacentLists(editor.dom, listBlock);
+        if (sibling && isListNode(sibling) && sibling.nodeName === listName && hasCompatibleStyle(dom, sibling, detail)) {
+          listBlock = sibling;
+          block = dom.rename(block, listItemName);
+          sibling.appendChild(block);
+        } else {
+          listBlock = dom.create(listName);
+          block.parentNode.insertBefore(listBlock, block);
+          listBlock.appendChild(block);
+          block = dom.rename(block, listItemName);
         }
+        removeStyles(dom, block, [
+          'margin',
+          'margin-right',
+          'margin-bottom',
+          'margin-left',
+          'margin-top',
+          'padding',
+          'padding-right',
+          'padding-bottom',
+          'padding-left',
+          'padding-top'
+        ]);
+        updateListWithDetails(dom, listBlock, detail);
+        mergeWithAdjacentLists(editor.dom, listBlock);
       });
       editor.selection.setRng(resolveBookmark(bookmark));
     };
@@ -1730,14 +1711,11 @@
       }
     };
     var toggleMultipleLists = function (editor, parentList, lists, listName, detail) {
-      var parentIsList = isListNode(parentList);
-      if (parentIsList && parentList.nodeName === listName && !hasListStyleDetail(detail)) {
+      if (parentList.nodeName === listName && !hasListStyleDetail(detail)) {
         flattenListSelection(editor);
       } else {
-        applyList(editor, listName, detail);
         var bookmark = createBookmark(editor.selection.getRng(true));
-        var allLists = parentIsList ? __spreadArrays([parentList], lists) : lists;
-        global$5.each(allLists, function (elm) {
+        global$5.each([parentList].concat(lists), function (elm) {
           updateList(editor, elm, listName, detail);
         });
         editor.selection.setRng(resolveBookmark(bookmark));
@@ -1759,7 +1737,6 @@
           var newList = editor.dom.rename(parentList, listName);
           mergeWithAdjacentLists(editor.dom, newList);
           editor.selection.setRng(resolveBookmark(bookmark));
-          applyList(editor, listName, detail);
           fireListEvent(editor, listToggleActionFromListName(listName), newList);
         }
       } else {
@@ -1767,18 +1744,18 @@
         fireListEvent(editor, listToggleActionFromListName(listName), parentList);
       }
     };
-    var toggleList = function (editor, listName, _detail) {
+    var toggleList = function (editor, listName, detail) {
       var parentList = getParentList(editor);
       var selectedSubLists = getSelectedSubLists(editor);
-      var detail = isObject(_detail) ? _detail : {};
-      if (selectedSubLists.length > 0) {
+      detail = detail ? detail : {};
+      if (parentList && selectedSubLists.length > 0) {
         toggleMultipleLists(editor, parentList, selectedSubLists, listName, detail);
       } else {
         toggleSingleList(editor, parentList, listName, detail);
       }
     };
 
-    var DOM$2 = global$4.DOM;
+    var DOM$2 = global$6.DOM;
     var normalizeList = function (dom, ul) {
       var sibling;
       var parentNode = ul.parentNode;
@@ -1786,7 +1763,7 @@
         sibling = parentNode.previousSibling;
         if (sibling && sibling.nodeName === 'LI') {
           sibling.appendChild(ul);
-          if (isEmpty$1(dom, parentNode)) {
+          if (isEmpty(dom, parentNode)) {
             DOM$2.remove(parentNode);
           }
         } else {
@@ -1847,7 +1824,7 @@
       var node;
       var targetElm = hasOnlyOneBlockChild(dom, toElm) ? toElm.firstChild : toElm;
       unwrapSingleBlockChild(dom, fromElm);
-      if (!isEmpty$1(dom, fromElm, true)) {
+      if (!isEmpty(dom, fromElm, true)) {
         while (node = fromElm.firstChild) {
           targetElm.appendChild(node);
         }
@@ -1871,18 +1848,18 @@
       if (node && isBr(node) && fromElm.hasChildNodes()) {
         dom.remove(node);
       }
-      if (isEmpty$1(dom, toElm, true)) {
+      if (isEmpty(dom, toElm, true)) {
         dom.$(toElm).empty();
       }
       moveChildren(dom, fromElm, toElm);
       if (listNode) {
         toElm.appendChild(listNode);
       }
-      var contains = contains$1(SugarElement.fromDom(toElm), SugarElement.fromDom(fromElm));
+      var contains = contains$1(Element.fromDom(toElm), Element.fromDom(fromElm));
       var nestedLists = contains ? dom.getParents(fromElm, isListNode, toElm) : [];
       dom.remove(fromElm);
       each(nestedLists, function (list) {
-        if (isEmpty$1(dom, list) && list !== dom.getRoot()) {
+        if (isEmpty(dom, list) && list !== dom.getRoot()) {
           dom.remove(list);
         }
       });
@@ -1890,7 +1867,7 @@
     var mergeIntoEmptyLi = function (editor, fromLi, toLi) {
       editor.dom.$(toLi).empty();
       mergeLiElements(editor.dom, fromLi, toLi);
-      editor.selection.setCursorLocation(toLi, 0);
+      editor.selection.setCursorLocation(toLi);
     };
     var mergeForward = function (editor, rng, fromLi, toLi) {
       var dom = editor.dom;
@@ -1915,7 +1892,7 @@
       var li = dom.getParent(selection.getStart(), 'LI', root);
       if (li) {
         var ul = li.parentNode;
-        if (ul === editor.getBody() && isEmpty$1(dom, ul)) {
+        if (ul === editor.getBody() && isEmpty(dom, ul)) {
           return true;
         }
         var rng_1 = normalizeRange(selection.getRng());
@@ -2004,7 +1981,7 @@
       });
     };
 
-    var get$1 = function (editor) {
+    var get = function (editor) {
       return {
         backspaceDelete: function (isForward) {
           backspaceDelete(editor, isForward);
@@ -2012,102 +1989,8 @@
       };
     };
 
-    var updateList$1 = function (editor, update) {
-      var parentList = getParentList(editor);
-      editor.undoManager.transact(function () {
-        if (isObject(update.styles)) {
-          editor.dom.setStyles(parentList, update.styles);
-        }
-        if (isObject(update.attrs)) {
-          each$1(update.attrs, function (v, k) {
-            return editor.dom.setAttrib(parentList, k, v);
-          });
-        }
-      });
-    };
-
-    var parseAlphabeticBase26 = function (str) {
-      var chars = reverse(trim(str).split(''));
-      var values = map(chars, function (char, i) {
-        var charValue = char.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0) + 1;
-        return Math.pow(26, i) * charValue;
-      });
-      return foldl(values, function (sum, v) {
-        return sum + v;
-      }, 0);
-    };
-    var composeAlphabeticBase26 = function (value) {
-      value--;
-      if (value < 0) {
-        return '';
-      } else {
-        var remainder = value % 26;
-        var quotient = Math.floor(value / 26);
-        var rest = composeAlphabeticBase26(quotient);
-        var char = String.fromCharCode('A'.charCodeAt(0) + remainder);
-        return rest + char;
-      }
-    };
-    var isUppercase = function (str) {
-      return /^[A-Z]+$/.test(str);
-    };
-    var isLowercase = function (str) {
-      return /^[a-z]+$/.test(str);
-    };
-    var isNumeric = function (str) {
-      return /^[0-9]+$/.test(str);
-    };
-    var deduceListType = function (start) {
-      if (isNumeric(start)) {
-        return 2;
-      } else if (isUppercase(start)) {
-        return 0;
-      } else if (isLowercase(start)) {
-        return 1;
-      } else if (isEmpty(start)) {
-        return 3;
-      } else {
-        return 4;
-      }
-    };
-    var parseStartValue = function (start) {
-      switch (deduceListType(start)) {
-      case 2:
-        return Optional.some({
-          listStyleType: Optional.none(),
-          start: start
-        });
-      case 0:
-        return Optional.some({
-          listStyleType: Optional.some('upper-alpha'),
-          start: parseAlphabeticBase26(start).toString()
-        });
-      case 1:
-        return Optional.some({
-          listStyleType: Optional.some('lower-alpha'),
-          start: parseAlphabeticBase26(start).toString()
-        });
-      case 3:
-        return Optional.some({
-          listStyleType: Optional.none(),
-          start: ''
-        });
-      case 4:
-        return Optional.none();
-      }
-    };
-    var parseDetail = function (detail) {
-      var start = parseInt(detail.start, 10);
-      if (detail.listStyleType.is('upper-alpha')) {
-        return composeAlphabeticBase26(start);
-      } else if (detail.listStyleType.is('lower-alpha')) {
-        return composeAlphabeticBase26(start).toLowerCase();
-      } else {
-        return detail.start;
-      }
-    };
-
     var open = function (editor) {
+      var dom = editor.dom;
       var currentList = getParentList(editor);
       if (!isOlNode(currentList)) {
         return;
@@ -2123,12 +2006,7 @@
               inputMode: 'numeric'
             }]
         },
-        initialData: {
-          start: parseDetail({
-            start: editor.dom.getAttrib(currentList, 'start', '1'),
-            listStyleType: Optional.some(editor.dom.getStyle(currentList, 'list-style-type'))
-          })
-        },
+        initialData: { start: dom.getAttrib(currentList, 'start') || '1' },
         buttons: [
           {
             type: 'cancel',
@@ -2144,11 +2022,8 @@
         ],
         onSubmit: function (api) {
           var data = api.getData();
-          parseStartValue(data.start).each(function (detail) {
-            editor.execCommand('mceListUpdate', false, {
-              attrs: { start: detail.start === '1' ? '' : detail.start },
-              styles: { 'list-style-type': detail.listStyleType.getOr('') }
-            });
+          editor.undoManager.transact(function () {
+            dom.setAttrib(getParentList(editor), 'start', data.start === '1' ? '' : data.start);
           });
           api.close();
         }
@@ -2157,14 +2032,9 @@
 
     var queryListCommandState = function (editor, listName) {
       return function () {
-        var parentList = getParentList(editor);
+        var parentList = editor.dom.getParent(editor.selection.getStart(), 'UL,OL,DL');
         return parentList && parentList.nodeName === listName;
       };
-    };
-    var registerDialog = function (editor) {
-      editor.addCommand('mceListProps', function () {
-        open(editor);
-      });
     };
     var register = function (editor) {
       editor.on('BeforeExecCommand', function (e) {
@@ -2187,15 +2057,20 @@
       editor.addCommand('RemoveList', function () {
         flattenListSelection(editor);
       });
-      registerDialog(editor);
-      editor.addCommand('mceListUpdate', function (ui, detail) {
-        if (isObject(detail)) {
-          updateList$1(editor, detail);
-        }
+      editor.addCommand('mceListProps', function () {
+        open(editor);
       });
       editor.addQueryStateHandler('InsertUnorderedList', queryListCommandState(editor, 'UL'));
       editor.addQueryStateHandler('InsertOrderedList', queryListCommandState(editor, 'OL'));
       editor.addQueryStateHandler('InsertDefinitionList', queryListCommandState(editor, 'DL'));
+    };
+
+    var hasRtcPlugin = function (editor) {
+      if (/(^|[ ,])rtc([, ]|$)/.test(editor.getParam('plugins', '', 'string')) && global.get('rtc')) {
+        return true;
+      } else {
+        return false;
+      }
     };
 
     var setupTabKey = function (editor) {
@@ -2218,12 +2093,16 @@
     };
 
     var register$1 = function (editor) {
+      var hasPlugin = function (editor, plugin) {
+        var plugins = editor.getParam('plugins', '', 'string');
+        return global$5.inArray(plugins.split(/[ ,]/), plugin) !== -1;
+      };
       var exec = function (command) {
         return function () {
           return editor.execCommand(command);
         };
       };
-      if (!editor.hasPlugin('advlist')) {
+      if (!hasPlugin(editor, 'advlist')) {
         editor.ui.registry.addToggleButton('numlist', {
           icon: 'ordered-list',
           active: false,
@@ -2250,7 +2129,7 @@
         text: 'List properties...',
         icon: 'ordered-list',
         onAction: function () {
-          return editor.execCommand('mceListProps');
+          return open(editor);
         },
         onSetup: function (api) {
           return listState(editor, 'OL', function (active) {
@@ -2269,18 +2148,16 @@
 
     function Plugin () {
       global.add('lists', function (editor) {
-        if (editor.hasPlugin('rtc', true) === false) {
+        if (hasRtcPlugin(editor) === false) {
           setup$1(editor);
           register(editor);
-        } else {
-          registerDialog(editor);
         }
         register$1(editor);
         register$2(editor);
-        return get$1(editor);
+        return get(editor);
       });
     }
 
     Plugin();
 
-}());
+}(window));

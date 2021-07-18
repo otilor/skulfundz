@@ -4,19 +4,12 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.8.1 (2021-05-20)
+ * Version: 5.4.1 (2020-07-08)
  */
-(function () {
+(function (domGlobals) {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
-
-    var eq = function (t) {
-      return function (a) {
-        return t === a;
-      };
-    };
-    var isUndefined = eq(undefined);
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.Delay');
 
@@ -48,7 +41,7 @@
       return editor.getParam('autosave_ask_before_unload', true);
     };
     var getAutoSavePrefix = function (editor) {
-      var location = document.location;
+      var location = domGlobals.document.location;
       return editor.getParam('autosave_prefix', 'tinymce-autosave-{path}{query}{hash}-{id}-').replace(/{path}/g, location.pathname).replace(/{query}/g, location.search).replace(/{hash}/g, location.hash).replace(/{id}/g, editor.id);
     };
     var shouldRestoreWhenEmpty = function (editor) {
@@ -61,6 +54,13 @@
       return parse(editor.getParam('autosave_retention'), '20m');
     };
 
+    var eq = function (t) {
+      return function (a) {
+        return t === a;
+      };
+    };
+    var isUndefined = eq(undefined);
+
     var isEmpty = function (editor, html) {
       if (isUndefined(html)) {
         return editor.dom.isEmpty(editor.getBody());
@@ -69,7 +69,7 @@
         if (trimmedHtml === '') {
           return true;
         } else {
-          var fragment = new DOMParser().parseFromString(trimmedHtml, 'text/html');
+          var fragment = new domGlobals.DOMParser().parseFromString(trimmedHtml, 'text/html');
           return editor.dom.isEmpty(fragment);
         }
       }
@@ -110,8 +110,10 @@
     };
     var startStoreDraft = function (editor) {
       var interval = getAutoSaveInterval(editor);
-      global$1.setEditorInterval(editor, function () {
-        storeDraft(editor);
+      global$1.setInterval(function () {
+        if (!editor.removed) {
+          storeDraft(editor);
+        }
       }, interval);
     };
     var restoreLastDraft = function (editor) {
@@ -209,4 +211,4 @@
 
     Plugin();
 
-}());
+}(window));

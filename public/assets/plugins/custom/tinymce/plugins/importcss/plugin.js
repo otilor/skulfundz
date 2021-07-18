@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.8.1 (2021-05-20)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function () {
     'use strict';
@@ -152,15 +152,9 @@
       }
       return filter;
     };
-    var isCssImportRule = function (rule) {
-      return rule.styleSheet;
-    };
-    var isCssPageRule = function (rule) {
-      return rule.selectorText;
-    };
     var getSelectors = function (editor, doc, fileFilter) {
       var selectors = [], contentCSSUrls = {};
-      var append = function (styleSheet, imported) {
+      function append(styleSheet, imported) {
         var href = styleSheet.href, rules;
         href = removeCacheSuffix(href);
         if (!href || !fileFilter(href, imported) || isSkinContentCss(editor, href)) {
@@ -174,15 +168,15 @@
         } catch (e) {
         }
         global$4.each(rules, function (cssRule) {
-          if (isCssImportRule(cssRule)) {
+          if (cssRule.styleSheet) {
             append(cssRule.styleSheet, true);
-          } else if (isCssPageRule(cssRule)) {
+          } else if (cssRule.selectorText) {
             global$4.each(cssRule.selectorText.split(','), function (selector) {
               selectors.push(global$4.trim(selector));
             });
           }
         });
-      };
+      }
       global$4.each(editor.contentCSS, function (url) {
         contentCSSUrls[url] = true;
       });

@@ -4,9 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.8.1 (2021-05-20)
+ * Version: 5.4.1 (2020-07-08)
  */
-(function () {
+(function (domGlobals) {
     'use strict';
 
     var Cell = function (initial) {
@@ -35,32 +35,6 @@
     var fireVisualChars = function (editor, state) {
       return editor.fire('VisualChars', { state: state });
     };
-
-    var typeOf = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var isString = isType('string');
-    var isBoolean = isSimpleType('boolean');
-    var isNumber = isSimpleType('number');
 
     var noop = function () {
     };
@@ -172,11 +146,37 @@
     var from = function (value) {
       return value === null || value === undefined ? NONE : some(value);
     };
-    var Optional = {
+    var Option = {
       some: some,
       none: none,
       from: from
     };
+
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var isString = isType('string');
+    var isBoolean = isSimpleType('boolean');
+    var isNumber = isSimpleType('number');
 
     var map = function (xs, f) {
       var len = xs.length;
@@ -214,15 +214,15 @@
       }
     };
 
-    var Global = typeof window !== 'undefined' ? window : Function('return this;')();
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
 
     var TEXT = 3;
 
     var type = function (element) {
-      return element.dom.nodeType;
+      return element.dom().nodeType;
     };
     var value = function (element) {
-      return element.dom.nodeValue;
+      return element.dom().nodeValue;
     };
     var isType$1 = function (t) {
       return function (element) {
@@ -235,19 +235,19 @@
       if (isString(value) || isBoolean(value) || isNumber(value)) {
         dom.setAttribute(key, value + '');
       } else {
-        console.error('Invalid call to Attribute.set. Key ', key, ':: Value ', value, ':: Element ', dom);
+        domGlobals.console.error('Invalid call to Attr.set. Key ', key, ':: Value ', value, ':: Element ', dom);
         throw new Error('Attribute value was not simple');
       }
     };
     var set = function (element, key, value) {
-      rawSet(element.dom, key, value);
+      rawSet(element.dom(), key, value);
     };
     var get$1 = function (element, key) {
-      var v = element.dom.getAttribute(key);
+      var v = element.dom().getAttribute(key);
       return v === null ? undefined : v;
     };
     var remove = function (element, key) {
-      element.dom.removeAttribute(key);
+      element.dom().removeAttribute(key);
     };
 
     var read = function (element, attr) {
@@ -273,7 +273,7 @@
     };
 
     var supports = function (element) {
-      return element.dom.classList !== undefined;
+      return element.dom().classList !== undefined;
     };
     var get$2 = function (element) {
       return read(element, 'class');
@@ -287,20 +287,20 @@
 
     var add$2 = function (element, clazz) {
       if (supports(element)) {
-        element.dom.classList.add(clazz);
+        element.dom().classList.add(clazz);
       } else {
         add$1(element, clazz);
       }
     };
     var cleanClass = function (element) {
-      var classList = supports(element) ? element.dom.classList : get$2(element);
+      var classList = supports(element) ? element.dom().classList : get$2(element);
       if (classList.length === 0) {
         remove(element, 'class');
       }
     };
     var remove$3 = function (element, clazz) {
       if (supports(element)) {
-        var classList = element.dom.classList;
+        var classList = element.dom().classList;
         classList.remove(clazz);
       } else {
         remove$2(element, clazz);
@@ -309,22 +309,22 @@
     };
 
     var fromHtml = function (html, scope) {
-      var doc = scope || document;
+      var doc = scope || domGlobals.document;
       var div = doc.createElement('div');
       div.innerHTML = html;
       if (!div.hasChildNodes() || div.childNodes.length > 1) {
-        console.error('HTML does not have a single root node', html);
+        domGlobals.console.error('HTML does not have a single root node', html);
         throw new Error('HTML must have a single root node');
       }
       return fromDom(div.childNodes[0]);
     };
     var fromTag = function (tag, scope) {
-      var doc = scope || document;
+      var doc = scope || domGlobals.document;
       var node = doc.createElement(tag);
       return fromDom(node);
     };
     var fromText = function (text, scope) {
-      var doc = scope || document;
+      var doc = scope || domGlobals.document;
       var node = doc.createTextNode(text);
       return fromDom(node);
     };
@@ -332,12 +332,13 @@
       if (node === null || node === undefined) {
         throw new Error('Node cannot be null or undefined');
       }
-      return { dom: node };
+      return { dom: constant(node) };
     };
     var fromPoint = function (docElm, x, y) {
-      return Optional.from(docElm.dom.elementFromPoint(x, y)).map(fromDom);
+      var doc = docElm.dom();
+      return Option.from(doc.elementFromPoint(x, y)).map(fromDom);
     };
-    var SugarElement = {
+    var Element = {
       fromHtml: fromHtml,
       fromTag: fromTag,
       fromText: fromText,
@@ -381,8 +382,8 @@
     };
     var filterDescendants = function (scope, predicate) {
       var result = [];
-      var dom = scope.dom;
-      var children = map(dom.childNodes, SugarElement.fromDom);
+      var dom = scope.dom();
+      var children = map(dom.childNodes, Element.fromDom);
       each(children, function (x) {
         if (predicate(x)) {
           result = result.concat([x]);
@@ -407,19 +408,19 @@
       return node.nodeName.toLowerCase() === 'span' && node.classList.contains('mce-nbsp-wrap');
     };
     var show = function (editor, rootElm) {
-      var nodeList = filterDescendants(SugarElement.fromDom(rootElm), isMatch);
+      var nodeList = filterDescendants(Element.fromDom(rootElm), isMatch);
       each(nodeList, function (n) {
-        var parent = n.dom.parentNode;
+        var parent = n.dom().parentNode;
         if (isWrappedNbsp(parent)) {
-          add$2(SugarElement.fromDom(parent), nbspClass);
+          add$2(Element.fromDom(parent), nbspClass);
         } else {
           var withSpans = replaceWithSpans(editor.dom.encode(value(n)));
           var div = editor.dom.create('div', null, withSpans);
           var node = void 0;
           while (node = div.lastChild) {
-            editor.dom.insertAfter(node, n.dom);
+            editor.dom.insertAfter(node, n.dom());
           }
-          editor.dom.remove(n.dom);
+          editor.dom.remove(n.dom());
         }
       });
     };
@@ -427,7 +428,7 @@
       var nodeList = editor.dom.select(selector, rootElm);
       each(nodeList, function (node) {
         if (isWrappedNbsp(node)) {
-          remove$3(SugarElement.fromDom(node), nbspClass);
+          remove$3(Element.fromDom(node), nbspClass);
         } else {
           editor.dom.remove(node, true);
         }
@@ -443,20 +444,18 @@
       editor.selection.moveToBookmark(bookmark);
     };
 
-    var applyVisualChars = function (editor, toggleState) {
-      fireVisualChars(editor, toggleState.get());
+    var toggleVisualChars = function (editor, toggleState) {
       var body = editor.getBody();
+      var selection = editor.selection;
+      toggleState.set(!toggleState.get());
+      fireVisualChars(editor, toggleState.get());
+      var bookmark = selection.getBookmark();
       if (toggleState.get() === true) {
         show(editor, body);
       } else {
         hide(editor, body);
       }
-    };
-    var toggleVisualChars = function (editor, toggleState) {
-      toggleState.set(!toggleState.get());
-      var bookmark = editor.selection.getBookmark();
-      applyVisualChars(editor, toggleState);
-      editor.selection.moveToBookmark(bookmark);
+      selection.moveToBookmark(bookmark);
     };
 
     var register = function (editor, toggleState) {
@@ -464,6 +463,8 @@
         toggleVisualChars(editor, toggleState);
       });
     };
+
+    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Delay');
 
     var isEnabledByDefault = function (editor) {
       return editor.getParam('visualchars_default_state', false);
@@ -473,14 +474,6 @@
     };
 
     var setup = function (editor, toggleState) {
-      editor.on('init', function () {
-        applyVisualChars(editor, toggleState);
-      });
-    };
-
-    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Delay');
-
-    var setup$1 = function (editor, toggleState) {
       var debouncedToggle = global$1.debounce(function () {
         toggle(editor);
       }, 300);
@@ -491,7 +484,14 @@
           }
         });
       }
-      editor.on('remove', debouncedToggle.stop);
+    };
+
+    var setup$1 = function (editor, toggleState) {
+      editor.on('init', function () {
+        var valueForToggling = !isEnabledByDefault(editor);
+        toggleState.set(valueForToggling);
+        toggleVisualChars(editor, toggleState);
+      });
     };
 
     var toggleActiveState = function (editor, enabledStated) {
@@ -527,15 +527,15 @@
 
     function Plugin () {
       global.add('visualchars', function (editor) {
-        var toggleState = Cell(isEnabledByDefault(editor));
+        var toggleState = Cell(false);
         register(editor, toggleState);
         register$1(editor, toggleState);
-        setup$1(editor, toggleState);
         setup(editor, toggleState);
+        setup$1(editor, toggleState);
         return get(toggleState);
       });
     }
 
     Plugin();
 
-}());
+}(window));
