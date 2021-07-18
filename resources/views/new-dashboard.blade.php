@@ -190,7 +190,7 @@ License: You must have a valid license purchased only from themeforest(the above
             <!--begin::Footer-->
             <div class="aside-footer d-flex flex-column align-items-center flex-column-auto py-8">
                 <!--begin::Notifications-->
-                <a href="#" class="btn btn-icon btn-lg btn-borderless mb-1 position-relative" id="kt_quick_notifications_toggle" data-toggle="tooltip" data-placement="right" data-container="body" data-boundary="window" title="Logout">
+                <a href="#" class="btn btn-icon btn-lg btn-borderless mb-1 position-relative"  data-toggle="tooltip" data-placement="right" data-container="body" data-boundary="window" title="Logout" onclick="logoutCurrentSession()">
                     <span class="svg-icon svg-icon-xxl"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Layers.svg--><!--end::Svg Icon-->
                         <i class="flaticon-logout"></i>
                     </span>
@@ -4019,6 +4019,11 @@ License: You must have a valid license purchased only from themeforest(the above
 </div>
 <!--end::Demo Panel-->
 
+{{--Logout form--}}
+<form action="{{ route('logout') }}" method="POST">
+    @csrf
+</form>
+
 <script>var HOST_URL = "https://preview.keenthemes.com/metronic/theme/html/tools/preview";</script>
 <!--begin::Global Config(global config for global JS scripts)-->
 <script>
@@ -4098,6 +4103,11 @@ License: You must have a valid license purchased only from themeforest(the above
 <!--begin::Page Scripts(used by this page)-->
 <script src="assets/js/pages/widgets.js"></script>
 <!--end::Page Scripts-->
+<script>
+    function logoutCurrentSession() {
+        document.getElementById('logout-form').submit;
+    }
+</script>
 </body>
 <!--end::Body-->
 </html>
