@@ -4,9 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.8.1 (2021-05-20)
+ * Version: 5.4.1 (2020-07-08)
  */
-(function () {
+(function (domGlobals) {
     'use strict';
 
     var Cell = function (initial) {
@@ -26,19 +26,6 @@
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
-
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var isNullable = function (a) {
-      return a === null || a === undefined;
-    };
-    var isNonNullable = function (a) {
-      return !isNullable(a);
-    };
-    var isFunction = isSimpleType('function');
 
     var noop = function () {
     };
@@ -150,36 +137,36 @@
     var from = function (value) {
       return value === null || value === undefined ? NONE : some(value);
     };
-    var Optional = {
+    var Option = {
       some: some,
       none: none,
       from: from
     };
 
-    var create = function (width, height) {
-      return resize(document.createElement('canvas'), width, height);
-    };
-    var clone = function (canvas) {
+    function create(width, height) {
+      return resize(domGlobals.document.createElement('canvas'), width, height);
+    }
+    function clone(canvas) {
       var tCanvas = create(canvas.width, canvas.height);
       var ctx = get2dContext(tCanvas);
       ctx.drawImage(canvas, 0, 0);
       return tCanvas;
-    };
-    var get2dContext = function (canvas) {
+    }
+    function get2dContext(canvas) {
       return canvas.getContext('2d');
-    };
-    var resize = function (canvas, width, height) {
+    }
+    function resize(canvas, width, height) {
       canvas.width = width;
       canvas.height = height;
       return canvas;
-    };
+    }
 
-    var getWidth = function (image) {
+    function getWidth(image) {
       return image.naturalWidth || image.width;
-    };
-    var getHeight = function (image) {
+    }
+    function getHeight(image) {
       return image.naturalHeight || image.height;
-    };
+    }
 
     var promise = function () {
       var Promise = function (fn) {
@@ -194,19 +181,14 @@
         this._deferreds = [];
         doResolve(fn, bind(resolve, this), bind(reject, this));
       };
-      var anyWindow = window;
-      var asap = Promise.immediateFn || typeof anyWindow.setImmediate === 'function' && anyWindow.setImmediate || function (fn) {
-        return setTimeout(fn, 1);
+      var asap = Promise.immediateFn || typeof window.setImmediate === 'function' && window.setImmediate || function (fn) {
+        domGlobals.setTimeout(fn, 1);
       };
-      var bind = function (fn, thisArg) {
+      function bind(fn, thisArg) {
         return function () {
-          var args = [];
-          for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-          }
-          return fn.apply(thisArg, args);
+          return fn.apply(thisArg, arguments);
         };
-      };
+      }
       var isArray = Array.isArray || function (value) {
         return Object.prototype.toString.call(value) === '[object Array]';
       };
@@ -269,7 +251,7 @@
         this.resolve = resolve;
         this.reject = reject;
       }
-      var doResolve = function (fn, onFulfilled, onRejected) {
+      function doResolve(fn, onFulfilled, onRejected) {
         var done = false;
         try {
           fn(function (value) {
@@ -292,7 +274,7 @@
           done = true;
           onRejected(ex);
         }
-      };
+      }
       Promise.prototype.catch = function (onRejected) {
         return this.then(null, onRejected);
       };
@@ -313,7 +295,7 @@
             return resolve([]);
           }
           var remaining = args.length;
-          var res = function (i, val) {
+          function res(i, val) {
             try {
               if (val && (typeof val === 'object' || typeof val === 'function')) {
                 var then = val.then;
@@ -331,7 +313,7 @@
             } catch (ex) {
               reject(ex);
             }
-          };
+          }
           for (var i = 0; i < args.length; i++) {
             res(i, args[i]);
           }
@@ -362,40 +344,40 @@
     };
     var Promise = window.Promise ? window.Promise : promise();
 
-    var imageToBlob = function (image) {
+    function imageToBlob(image) {
       var src = image.src;
       if (src.indexOf('data:') === 0) {
         return dataUriToBlob(src);
       }
       return anyUriToBlob(src);
-    };
-    var blobToImage = function (blob) {
+    }
+    function blobToImage(blob) {
       return new Promise(function (resolve, reject) {
-        var blobUrl = URL.createObjectURL(blob);
-        var image = new Image();
+        var blobUrl = domGlobals.URL.createObjectURL(blob);
+        var image = new domGlobals.Image();
         var removeListeners = function () {
           image.removeEventListener('load', loaded);
           image.removeEventListener('error', error);
         };
-        var loaded = function () {
+        function loaded() {
           removeListeners();
           resolve(image);
-        };
-        var error = function () {
+        }
+        function error() {
           removeListeners();
           reject('Unable to load data of type ' + blob.type + ': ' + blobUrl);
-        };
+        }
         image.addEventListener('load', loaded);
         image.addEventListener('error', error);
         image.src = blobUrl;
         if (image.complete) {
-          setTimeout(loaded, 0);
+          loaded();
         }
       });
-    };
-    var anyUriToBlob = function (url) {
+    }
+    function anyUriToBlob(url) {
       return new Promise(function (resolve, reject) {
-        var xhr = new XMLHttpRequest();
+        var xhr = new domGlobals.XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'blob';
         xhr.onload = function () {
@@ -418,17 +400,17 @@
         };
         xhr.send();
       });
-    };
-    var dataUriToBlobSync = function (uri) {
+    }
+    function dataUriToBlobSync(uri) {
       var data = uri.split(',');
       var matches = /data:([^;]+)/.exec(data[0]);
       if (!matches) {
-        return Optional.none();
+        return Option.none();
       }
       var mimetype = matches[1];
       var base64 = data[1];
       var sliceSize = 1024;
-      var byteCharacters = atob(base64);
+      var byteCharacters = domGlobals.atob(base64);
       var bytesLength = byteCharacters.length;
       var slicesCount = Math.ceil(bytesLength / sliceSize);
       var byteArrays = new Array(slicesCount);
@@ -441,18 +423,18 @@
         }
         byteArrays[sliceIndex] = new Uint8Array(bytes);
       }
-      return Optional.some(new Blob(byteArrays, { type: mimetype }));
-    };
-    var dataUriToBlob = function (uri) {
+      return Option.some(new domGlobals.Blob(byteArrays, { type: mimetype }));
+    }
+    function dataUriToBlob(uri) {
       return new Promise(function (resolve, reject) {
         dataUriToBlobSync(uri).fold(function () {
           reject('uri is not base64: ' + uri);
         }, resolve);
       });
-    };
-    var canvasToBlob = function (canvas, type, quality) {
+    }
+    function canvasToBlob(canvas, type, quality) {
       type = type || 'image/png';
-      if (isFunction(HTMLCanvasElement.prototype.toBlob)) {
+      if (domGlobals.HTMLCanvasElement.prototype.toBlob) {
         return new Promise(function (resolve, reject) {
           canvas.toBlob(function (blob) {
             if (blob) {
@@ -465,12 +447,12 @@
       } else {
         return dataUriToBlob(canvas.toDataURL(type, quality));
       }
-    };
-    var canvasToDataURL = function (canvas, type, quality) {
+    }
+    function canvasToDataURL(canvas, type, quality) {
       type = type || 'image/png';
       return canvas.toDataURL(type, quality);
-    };
-    var blobToCanvas = function (blob) {
+    }
+    function blobToCanvas(blob) {
       return blobToImage(blob).then(function (image) {
         revokeImageUrl(image);
         var canvas = create(getWidth(image), getHeight(image));
@@ -478,19 +460,19 @@
         context.drawImage(image, 0, 0);
         return canvas;
       });
-    };
-    var blobToDataUri = function (blob) {
+    }
+    function blobToDataUri(blob) {
       return new Promise(function (resolve) {
-        var reader = new FileReader();
+        var reader = new domGlobals.FileReader();
         reader.onloadend = function () {
           resolve(reader.result);
         };
         reader.readAsDataURL(blob);
       });
-    };
-    var revokeImageUrl = function (image) {
-      URL.revokeObjectURL(image.src);
-    };
+    }
+    function revokeImageUrl(image) {
+      domGlobals.URL.revokeObjectURL(image.src);
+    }
 
     var blobToImage$1 = function (blob) {
       return blobToImage(blob);
@@ -499,61 +481,34 @@
       return imageToBlob(image);
     };
 
-    var each = function (xs, f) {
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        f(x, i);
-      }
-    };
-    var foldl = function (xs, f, acc) {
-      each(xs, function (x) {
-        acc = f(acc, x);
-      });
-      return acc;
-    };
-    var findUntil = function (xs, pred, until) {
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        if (pred(x, i)) {
-          return Optional.some(x);
-        } else if (until(x, i)) {
-          break;
-        }
-      }
-      return Optional.none();
-    };
-    var find = function (xs, pred) {
-      return findUntil(xs, pred, never);
-    };
-
-    var create$1 = function (getCanvas, blob, uri) {
+    function create$1(getCanvas, blob, uri) {
       var initialType = blob.type;
       var getType = constant(initialType);
-      var toBlob = function () {
+      function toBlob() {
         return Promise.resolve(blob);
-      };
+      }
       var toDataURL = constant(uri);
-      var toBase64 = function () {
+      function toBase64() {
         return uri.split(',')[1];
-      };
-      var toAdjustedBlob = function (type, quality) {
+      }
+      function toAdjustedBlob(type, quality) {
         return getCanvas.then(function (canvas) {
           return canvasToBlob(canvas, type, quality);
         });
-      };
-      var toAdjustedDataURL = function (type, quality) {
+      }
+      function toAdjustedDataURL(type, quality) {
         return getCanvas.then(function (canvas) {
           return canvasToDataURL(canvas, type, quality);
         });
-      };
-      var toAdjustedBase64 = function (type, quality) {
+      }
+      function toAdjustedBase64(type, quality) {
         return toAdjustedDataURL(type, quality).then(function (dataurl) {
           return dataurl.split(',')[1];
         });
-      };
-      var toCanvas = function () {
+      }
+      function toCanvas() {
         return getCanvas.then(clone);
-      };
+      }
       return {
         getType: getType,
         toBlob: toBlob,
@@ -564,53 +519,49 @@
         toAdjustedBase64: toAdjustedBase64,
         toCanvas: toCanvas
       };
-    };
-    var fromBlob = function (blob) {
+    }
+    function fromBlob(blob) {
       return blobToDataUri(blob).then(function (uri) {
         return create$1(blobToCanvas(blob), blob, uri);
       });
-    };
-    var fromCanvas = function (canvas, type) {
+    }
+    function fromCanvas(canvas, type) {
       return canvasToBlob(canvas, type).then(function (blob) {
         return create$1(Promise.resolve(canvas), blob, canvas.toDataURL());
       });
-    };
+    }
 
-    var ceilWithPrecision = function (num, precision) {
-      if (precision === void 0) {
-        precision = 2;
-      }
-      var mul = Math.pow(10, precision);
-      var upper = Math.round(num * mul);
-      return Math.ceil(upper / mul);
-    };
-    var rotate = function (ir, angle) {
+    function rotate(ir, angle) {
       return ir.toCanvas().then(function (canvas) {
         return applyRotate(canvas, ir.getType(), angle);
       });
-    };
-    var applyRotate = function (image, type, angle) {
-      var degrees = angle < 0 ? 360 + angle : angle;
-      var rad = degrees * Math.PI / 180;
-      var width = image.width;
-      var height = image.height;
-      var sin = Math.sin(rad);
-      var cos = Math.cos(rad);
-      var newWidth = ceilWithPrecision(Math.abs(width * cos) + Math.abs(height * sin));
-      var newHeight = ceilWithPrecision(Math.abs(width * sin) + Math.abs(height * cos));
-      var canvas = create(newWidth, newHeight);
+    }
+    function applyRotate(image, type, angle) {
+      var canvas = create(image.width, image.height);
       var context = get2dContext(canvas);
-      context.translate(newWidth / 2, newHeight / 2);
-      context.rotate(rad);
-      context.drawImage(image, -width / 2, -height / 2);
+      var translateX = 0;
+      var translateY = 0;
+      angle = angle < 0 ? 360 + angle : angle;
+      if (angle === 90 || angle === 270) {
+        resize(canvas, canvas.height, canvas.width);
+      }
+      if (angle === 90 || angle === 180) {
+        translateX = canvas.width;
+      }
+      if (angle === 270 || angle === 180) {
+        translateY = canvas.height;
+      }
+      context.translate(translateX, translateY);
+      context.rotate(angle * Math.PI / 180);
+      context.drawImage(image, 0, 0);
       return fromCanvas(canvas, type);
-    };
-    var flip = function (ir, axis) {
+    }
+    function flip(ir, axis) {
       return ir.toCanvas().then(function (canvas) {
         return applyFlip(canvas, ir.getType(), axis);
       });
-    };
-    var applyFlip = function (image, type, axis) {
+    }
+    function applyFlip(image, type, axis) {
       var canvas = create(image.width, image.height);
       var context = get2dContext(canvas);
       if (axis === 'v') {
@@ -621,6 +572,28 @@
         context.drawImage(image, -canvas.width, 0);
       }
       return fromCanvas(canvas, type);
+    }
+
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var isFunction = isSimpleType('function');
+
+    var findUntil = function (xs, pred, until) {
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        if (pred(x, i)) {
+          return Option.some(x);
+        } else if (until(x, i)) {
+          break;
+        }
+      }
+      return Option.none();
+    };
+    var find = function (xs, pred) {
+      return findUntil(xs, pred, never);
     };
 
     var flip$1 = function (ir, axis) {
@@ -630,194 +603,27 @@
       return rotate(ir, angle);
     };
 
-    var keys = Object.keys;
-    var each$1 = function (obj, f) {
-      var props = keys(obj);
-      for (var k = 0, len = props.length; k < len; k++) {
-        var i = props[k];
-        var x = obj[i];
-        f(x, i);
-      }
-    };
-
-    var sendRequest = function (url, headers, withCredentials) {
-      if (withCredentials === void 0) {
-        withCredentials = false;
-      }
-      return new Promise(function (resolve) {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-          if (xhr.readyState === 4) {
-            resolve({
-              status: xhr.status,
-              blob: xhr.response
-            });
-          }
-        };
-        xhr.open('GET', url, true);
-        xhr.withCredentials = withCredentials;
-        each$1(headers, function (value, key) {
-          xhr.setRequestHeader(key, value);
-        });
-        xhr.responseType = 'blob';
-        xhr.send();
-      });
-    };
-    var readBlobText = function (blob) {
-      return new Promise(function (resolve, reject) {
-        var reader = new FileReader();
-        reader.onload = function () {
-          resolve(reader.result);
-        };
-        reader.onerror = function (e) {
-          reject(e);
-        };
-        reader.readAsText(blob);
-      });
-    };
-    var parseJson = function (text) {
-      try {
-        return Optional.some(JSON.parse(text));
-      } catch (ex) {
-        return Optional.none();
-      }
-    };
-
-    var friendlyHttpErrors = [
-      {
-        code: 404,
-        message: 'Could not find Image Proxy'
-      },
-      {
-        code: 403,
-        message: 'Rejected request'
-      },
-      {
-        code: 0,
-        message: 'Incorrect Image Proxy URL'
-      }
-    ];
-    var friendlyServiceErrors = [
-      {
-        type: 'not_found',
-        message: 'Failed to load image.'
-      },
-      {
-        type: 'key_missing',
-        message: 'The request did not include an api key.'
-      },
-      {
-        type: 'key_not_found',
-        message: 'The provided api key could not be found.'
-      },
-      {
-        type: 'domain_not_trusted',
-        message: 'The api key is not valid for the request origins.'
-      }
-    ];
-    var traverseJson = function (json, path) {
-      var value = foldl(path, function (result, key) {
-        return isNonNullable(result) ? result[key] : undefined;
-      }, json);
-      return Optional.from(value);
-    };
-    var isServiceErrorCode = function (code, blob) {
-      return (blob === null || blob === void 0 ? void 0 : blob.type) === 'application/json' && (code === 400 || code === 403 || code === 404 || code === 500);
-    };
-    var getHttpErrorMsg = function (status) {
-      var message = find(friendlyHttpErrors, function (error) {
-        return status === error.code;
-      }).fold(constant('Unknown ImageProxy error'), function (error) {
-        return error.message;
-      });
-      return 'ImageProxy HTTP error: ' + message;
-    };
-    var handleHttpError = function (status) {
-      var message = getHttpErrorMsg(status);
-      return Promise.reject(message);
-    };
-    var getServiceErrorMsg = function (type) {
-      return find(friendlyServiceErrors, function (error) {
-        return error.type === type;
-      }).fold(constant('Unknown service error'), function (error) {
-        return error.message;
-      });
-    };
-    var getServiceError = function (text) {
-      var serviceError = parseJson(text);
-      var errorMsg = serviceError.bind(function (err) {
-        return traverseJson(err, [
-          'error',
-          'type'
-        ]).map(getServiceErrorMsg);
-      }).getOr('Invalid JSON in service error message');
-      return 'ImageProxy Service error: ' + errorMsg;
-    };
-    var handleServiceError = function (blob) {
-      return readBlobText(blob).then(function (text) {
-        var serviceError = getServiceError(text);
-        return Promise.reject(serviceError);
-      });
-    };
-    var handleServiceErrorResponse = function (status, blob) {
-      return isServiceErrorCode(status, blob) ? handleServiceError(blob) : handleHttpError(status);
-    };
-
-    var appendApiKey = function (url, apiKey) {
-      var separator = url.indexOf('?') === -1 ? '?' : '&';
-      if (/[?&]apiKey=/.test(url)) {
-        return url;
-      } else {
-        return url + separator + 'apiKey=' + encodeURIComponent(apiKey);
-      }
-    };
-    var isError = function (status) {
-      return status < 200 || status >= 300;
-    };
-    var requestServiceBlob = function (url, apiKey) {
-      var headers = {
-        'Content-Type': 'application/json;charset=UTF-8',
-        'tiny-api-key': apiKey
-      };
-      return sendRequest(appendApiKey(url, apiKey), headers).then(function (result) {
-        return isError(result.status) ? handleServiceErrorResponse(result.status, result.blob) : Promise.resolve(result.blob);
-      });
-    };
-    var requestBlob = function (url, withCredentials) {
-      return sendRequest(url, {}, withCredentials).then(function (result) {
-        return isError(result.status) ? handleHttpError(result.status) : Promise.resolve(result.blob);
-      });
-    };
-    var getUrl = function (url, apiKey, withCredentials) {
-      if (withCredentials === void 0) {
-        withCredentials = false;
-      }
-      return apiKey ? requestServiceBlob(url, apiKey) : requestBlob(url, withCredentials);
-    };
-
     var blobToImageResult = function (blob) {
       return fromBlob(blob);
     };
 
-    var ELEMENT = 1;
-
     var fromHtml = function (html, scope) {
-      var doc = scope || document;
+      var doc = scope || domGlobals.document;
       var div = doc.createElement('div');
       div.innerHTML = html;
       if (!div.hasChildNodes() || div.childNodes.length > 1) {
-        console.error('HTML does not have a single root node', html);
+        domGlobals.console.error('HTML does not have a single root node', html);
         throw new Error('HTML must have a single root node');
       }
       return fromDom(div.childNodes[0]);
     };
     var fromTag = function (tag, scope) {
-      var doc = scope || document;
+      var doc = scope || domGlobals.document;
       var node = doc.createElement(tag);
       return fromDom(node);
     };
     var fromText = function (text, scope) {
-      var doc = scope || document;
+      var doc = scope || domGlobals.document;
       var node = doc.createTextNode(text);
       return fromDom(node);
     };
@@ -825,12 +631,13 @@
       if (node === null || node === undefined) {
         throw new Error('Node cannot be null or undefined');
       }
-      return { dom: node };
+      return { dom: constant(node) };
     };
     var fromPoint = function (docElm, x, y) {
-      return Optional.from(docElm.dom.elementFromPoint(x, y)).map(fromDom);
+      var doc = docElm.dom();
+      return Option.from(doc.elementFromPoint(x, y)).map(fromDom);
     };
-    var SugarElement = {
+    var Element = {
       fromHtml: fromHtml,
       fromTag: fromTag,
       fromText: fromText,
@@ -838,8 +645,10 @@
       fromPoint: fromPoint
     };
 
+    var ELEMENT = 1;
+
     var is = function (element, selector) {
-      var dom = element.dom;
+      var dom = element.dom();
       if (dom.nodeType !== ELEMENT) {
         return false;
       } else {
@@ -858,14 +667,16 @@
       }
     };
 
-    var Global = typeof window !== 'undefined' ? window : Function('return this;')();
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
+
+    var supported = isFunction(domGlobals.Element.prototype.attachShadow) && isFunction(domGlobals.Node.prototype.getRootNode);
 
     var child = function (scope, predicate) {
       var pred = function (node) {
-        return predicate(SugarElement.fromDom(node));
+        return predicate(Element.fromDom(node));
       };
-      var result = find(scope.dom.childNodes, pred);
-      return result.map(SugarElement.fromDom);
+      var result = find(scope.dom().childNodes, pred);
+      return result.map(Element.fromDom);
     };
 
     var child$1 = function (scope, selector) {
@@ -893,7 +704,7 @@
       return editor.getParam('imagetools_credentials_hosts', [], 'string[]');
     };
     var getFetchImage = function (editor) {
-      return Optional.from(editor.getParam('imagetools_fetch_image', null, 'function'));
+      return Option.from(editor.getParam('imagetools_fetch_image', null, 'function'));
     };
     var getApiKey = function (editor) {
       return editor.getParam('api_key', editor.getParam('imagetools_api_key', '', 'string'), 'string');
@@ -905,11 +716,11 @@
       return editor.getParam('images_reuse_filename', false, 'boolean');
     };
 
-    var getImageSize = function (img) {
+    function getImageSize(img) {
       var width, height;
-      var isPxValue = function (value) {
+      function isPxValue(value) {
         return /^[0-9\.]+px$/.test(value);
-      };
+      }
       width = img.style.width;
       height = img.style.height;
       if (width || height) {
@@ -930,8 +741,8 @@
         };
       }
       return null;
-    };
-    var setImageSize = function (img, size) {
+    }
+    function setImageSize(img, size) {
       var width, height;
       if (size) {
         width = img.style.width;
@@ -944,39 +755,182 @@
         width = img.width;
         height = img.height;
         if (width || height) {
-          img.setAttribute('width', String(size.w));
-          img.setAttribute('height', String(size.h));
+          img.setAttribute('width', size.w);
+          img.setAttribute('height', size.h);
         }
       }
-    };
-    var getNaturalImageSize = function (img) {
+    }
+    function getNaturalImageSize(img) {
       return {
         w: img.naturalWidth,
         h: img.naturalHeight
       };
+    }
+
+    var isValue = function (obj) {
+      return obj !== null && obj !== undefined;
+    };
+    var traverse = function (json, path) {
+      var value = path.reduce(function (result, key) {
+        return isValue(result) ? result[key] : undefined;
+      }, json);
+      return isValue(value) ? value : null;
+    };
+    var requestUrlAsBlob = function (url, headers, withCredentials) {
+      return new global$3(function (resolve) {
+        var xhr = new domGlobals.XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            resolve({
+              status: xhr.status,
+              blob: this.response
+            });
+          }
+        };
+        xhr.open('GET', url, true);
+        xhr.withCredentials = withCredentials;
+        global$1.each(headers, function (value, key) {
+          xhr.setRequestHeader(key, value);
+        });
+        xhr.responseType = 'blob';
+        xhr.send();
+      });
+    };
+    var readBlob = function (blob) {
+      return new global$3(function (resolve) {
+        var fr = new domGlobals.FileReader();
+        fr.onload = function (e) {
+          var data = e.target;
+          resolve(data.result);
+        };
+        fr.readAsText(blob);
+      });
+    };
+    var parseJson = function (text) {
+      var json;
+      try {
+        json = JSON.parse(text);
+      } catch (ex) {
+      }
+      return json;
+    };
+
+    var friendlyHttpErrors = [
+      {
+        code: 404,
+        message: 'Could not find Image Proxy'
+      },
+      {
+        code: 403,
+        message: 'Rejected request'
+      },
+      {
+        code: 0,
+        message: 'Incorrect Image Proxy URL'
+      }
+    ];
+    var friendlyServiceErrors = [
+      {
+        type: 'key_missing',
+        message: 'The request did not include an api key.'
+      },
+      {
+        type: 'key_not_found',
+        message: 'The provided api key could not be found.'
+      },
+      {
+        type: 'domain_not_trusted',
+        message: 'The api key is not valid for the request origins.'
+      }
+    ];
+    var isServiceErrorCode = function (code) {
+      return code === 400 || code === 403 || code === 500;
+    };
+    var getHttpErrorMsg = function (status) {
+      var message = find(friendlyHttpErrors, function (error) {
+        return status === error.code;
+      }).fold(constant('Unknown ImageProxy error'), function (error) {
+        return error.message;
+      });
+      return 'ImageProxy HTTP error: ' + message;
+    };
+    var handleHttpError = function (status) {
+      var message = getHttpErrorMsg(status);
+      return global$3.reject(message);
+    };
+    var getServiceErrorMsg = function (type) {
+      return find(friendlyServiceErrors, function (error) {
+        return error.type === type;
+      }).fold(constant('Unknown service error'), function (error) {
+        return error.message;
+      });
+    };
+    var getServiceError = function (text) {
+      var serviceError = parseJson(text);
+      var errorType = traverse(serviceError, [
+        'error',
+        'type'
+      ]);
+      var errorMsg = errorType ? getServiceErrorMsg(errorType) : 'Invalid JSON in service error message';
+      return 'ImageProxy Service error: ' + errorMsg;
+    };
+    var handleServiceError = function (status, blob) {
+      return readBlob(blob).then(function (text) {
+        var serviceError = getServiceError(text);
+        return global$3.reject(serviceError);
+      });
+    };
+    var handleServiceErrorResponse = function (status, blob) {
+      return isServiceErrorCode(status) ? handleServiceError(status, blob) : handleHttpError(status);
+    };
+
+    var appendApiKey = function (url, apiKey) {
+      var separator = url.indexOf('?') === -1 ? '?' : '&';
+      if (/[?&]apiKey=/.test(url) || !apiKey) {
+        return url;
+      } else {
+        return url + separator + 'apiKey=' + encodeURIComponent(apiKey);
+      }
+    };
+    var requestServiceBlob = function (url, apiKey) {
+      var headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'tiny-api-key': apiKey
+      };
+      return requestUrlAsBlob(appendApiKey(url, apiKey), headers, false).then(function (result) {
+        return result.status < 200 || result.status >= 300 ? handleServiceErrorResponse(result.status, result.blob) : global$3.resolve(result.blob);
+      });
+    };
+    function requestBlob(url, withCredentials) {
+      return requestUrlAsBlob(url, {}, withCredentials).then(function (result) {
+        return result.status < 200 || result.status >= 300 ? handleHttpError(result.status) : global$3.resolve(result.blob);
+      });
+    }
+    var getUrl = function (url, apiKey, withCredentials) {
+      return apiKey ? requestServiceBlob(url, apiKey) : requestBlob(url, withCredentials);
     };
 
     var count = 0;
     var getFigureImg = function (elem) {
-      return child$1(SugarElement.fromDom(elem), 'img');
+      return child$1(Element.fromDom(elem), 'img');
     };
     var isFigure = function (editor, elem) {
       return editor.dom.is(elem, 'figure');
     };
-    var isImage = function (editor, imgNode) {
-      return editor.dom.is(imgNode, 'img:not([data-mce-object],[data-mce-placeholder])');
-    };
-    var getEditableImage = function (editor, node) {
-      var isEditable = function (imgNode) {
-        return isImage(editor, imgNode) && (isLocalImage(editor, imgNode) || isCorsImage(editor, imgNode) || isNonNullable(getProxyUrl(editor)));
+    var getEditableImage = function (editor, elem) {
+      var isImage = function (imgNode) {
+        return editor.dom.is(imgNode, 'img:not([data-mce-object],[data-mce-placeholder])');
       };
-      if (isFigure(editor, node)) {
-        return getFigureImg(node).bind(function (img) {
-          return isEditable(img.dom) ? Optional.some(img.dom) : Optional.none();
+      var isEditable = function (imgNode) {
+        return isImage(imgNode) && (isLocalImage(editor, imgNode) || isCorsImage(editor, imgNode) || getProxyUrl(editor));
+      };
+      if (isFigure(editor, elem)) {
+        var imgOpt = getFigureImg(elem);
+        return imgOpt.map(function (img) {
+          return isEditable(img.dom()) ? Option.some(img.dom()) : Option.none();
         });
-      } else {
-        return isEditable(node) ? Optional.some(node) : Optional.none();
       }
+      return isEditable(elem) ? Option.some(elem) : Option.none();
     };
     var displayError = function (editor, error) {
       editor.notificationManager.open({
@@ -986,18 +940,18 @@
     };
     var getSelectedImage = function (editor) {
       var elem = editor.selection.getNode();
-      var figureElm = editor.dom.getParent(elem, 'figure.image');
-      if (figureElm !== null && isFigure(editor, figureElm)) {
-        return getFigureImg(figureElm);
-      } else if (isImage(editor, elem)) {
-        return Optional.some(SugarElement.fromDom(elem));
+      if (isFigure(editor, elem)) {
+        return getFigureImg(elem);
       } else {
-        return Optional.none();
+        return Option.some(Element.fromDom(elem));
       }
     };
-    var extractFilename = function (editor, url, group) {
-      var m = url.match(/(?:\/|^)(([^\/\?]+)\.(?:[a-z0-9.]+))(?:\?|$)/i);
-      return isNonNullable(m) ? editor.dom.encode(m[group]) : null;
+    var extractFilename = function (editor, url) {
+      var m = url.match(/\/([^\/\?]+)?\.(?:jpeg|jpg|png|gif)(?:\?|$)/i);
+      if (m) {
+        return editor.dom.encode(m[1]);
+      }
+      return null;
     };
     var createId = function () {
       return 'imagetools' + count++;
@@ -1013,13 +967,14 @@
       return global$1.inArray(getCredentialsHosts(editor), new global$4(img.src).host) !== -1;
     };
     var defaultFetchImage = function (editor, img) {
+      var src = img.src, apiKey;
       if (isCorsImage(editor, img)) {
         return getUrl(img.src, null, isCorsWithCredentialsImage(editor, img));
       }
       if (!isLocalImage(editor, img)) {
-        var proxyUrl = getProxyUrl(editor);
-        var src = proxyUrl + (proxyUrl.indexOf('?') === -1 ? '?' : '&') + 'url=' + encodeURIComponent(img.src);
-        var apiKey = getApiKey(editor);
+        src = getProxyUrl(editor);
+        src += (src.indexOf('?') === -1 ? '?' : '&') + 'url=' + encodeURIComponent(img.src);
+        apiKey = getApiKey(editor);
         return getUrl(src, apiKey, false);
       }
       return imageToBlob$1(img);
@@ -1047,21 +1002,18 @@
     var cancelTimedUpload = function (imageUploadTimerState) {
       global$2.clearTimeout(imageUploadTimerState.get());
     };
-    var updateSelectedImage = function (editor, origBlob, ir, uploadImmediately, imageUploadTimerState, selectedImage, size) {
+    var updateSelectedImage = function (editor, ir, uploadImmediately, imageUploadTimerState, selectedImage, size) {
       return ir.toBlob().then(function (blob) {
-        var uri, name, filename, blobInfo;
+        var uri, name, blobInfo;
         var blobCache = editor.editorUpload.blobCache;
         uri = selectedImage.src;
-        var useFilename = origBlob.type === blob.type;
         if (shouldReuseFilename(editor)) {
           blobInfo = blobCache.getByUri(uri);
-          if (isNonNullable(blobInfo)) {
+          if (blobInfo) {
             uri = blobInfo.uri();
             name = blobInfo.name();
-            filename = blobInfo.filename();
           } else {
-            name = extractFilename(editor, uri, 2);
-            filename = extractFilename(editor, uri, 1);
+            name = extractFilename(editor, uri);
           }
         }
         blobInfo = blobCache.create({
@@ -1069,12 +1021,11 @@
           blob: blob,
           base64: ir.toBase64(),
           uri: uri,
-          name: name,
-          filename: useFilename ? filename : undefined
+          name: name
         });
         blobCache.add(blobInfo);
         editor.undoManager.transact(function () {
-          var imageLoadedHandler = function () {
+          function imageLoadedHandler() {
             editor.$(selectedImage).off('load', imageLoadedHandler);
             editor.nodeChanged();
             if (uploadImmediately) {
@@ -1083,7 +1034,7 @@
               cancelTimedUpload(imageUploadTimerState);
               startTimedUpload(editor, imageUploadTimerState);
             }
-          };
+          }
           editor.$(selectedImage).on('load', imageLoadedHandler);
           if (size) {
             editor.$(selectedImage).attr({
@@ -1103,12 +1054,10 @@
           displayError(editor, 'Could not find selected image');
         }, function (img) {
           return editor._scanForImages().then(function () {
-            return findBlob(editor, img.dom);
-          }).then(function (blob) {
-            return blobToImageResult(blob).then(fn).then(function (imageResult) {
-              return updateSelectedImage(editor, blob, imageResult, false, imageUploadTimerState, img.dom, size);
-            });
-          }).catch(function (error) {
+            return findBlob(editor, img.dom());
+          }).then(blobToImageResult).then(fn).then(function (imageResult) {
+            return updateSelectedImage(editor, imageResult, false, imageUploadTimerState, img.dom(), size);
+          }, function (error) {
             displayError(editor, error);
           });
         });
@@ -1120,7 +1069,7 @@
         var flippedSize = imgOpt.fold(function () {
           return null;
         }, function (img) {
-          var size = getImageSize(img.dom);
+          var size = getImageSize(img.dom());
           return size ? {
             w: size.h,
             h: size.w
@@ -1146,10 +1095,11 @@
             setImageSize(img, newSize);
           }
         }
-        URL.revokeObjectURL(newImage.src);
+        domGlobals.URL.revokeObjectURL(newImage.src);
         return blob;
       }).then(blobToImageResult).then(function (imageResult) {
-        return updateSelectedImage(editor, blob, imageResult, true, imageUploadTimerState, img);
+        return updateSelectedImage(editor, imageResult, true, imageUploadTimerState, img);
+      }, function () {
       });
     };
 
@@ -1160,7 +1110,7 @@
     var createState = function (blob) {
       return {
         blob: blob,
-        url: URL.createObjectURL(blob)
+        url: domGlobals.URL.createObjectURL(blob)
       };
     };
     var makeOpen = function (editor, imageUploadTimerState) {
@@ -1196,12 +1146,13 @@
               var blob = api.getData().imagetools.blob;
               originalImgOpt.each(function (originalImg) {
                 originalSizeOpt.each(function (originalSize) {
-                  handleDialogBlob(editor, imageUploadTimerState, originalImg.dom, originalSize, blob);
+                  handleDialogBlob(editor, imageUploadTimerState, originalImg.dom(), originalSize, blob);
                 });
               });
               api.close();
             },
-            onCancel: noop,
+            onCancel: function () {
+            },
             onAction: function (api, details) {
               switch (details.name) {
               case saveState:
@@ -1224,11 +1175,12 @@
         };
         var originalImgOpt = getSelectedImage(editor);
         var originalSizeOpt = originalImgOpt.map(function (origImg) {
-          return getNaturalImageSize(origImg.dom);
+          return getNaturalImageSize(origImg.dom());
         });
-        originalImgOpt.each(function (img) {
-          getEditableImage(editor, img.dom).each(function (_) {
-            findBlob(editor, img.dom).then(function (blob) {
+        var imgOpt = getSelectedImage(editor);
+        imgOpt.each(function (img) {
+          getEditableImage(editor, img.dom()).each(function (_) {
+            findBlob(editor, img.dom()).then(function (blob) {
               var state = createState(blob);
               editor.windowManager.open(getLoadedSpec(state));
             });
@@ -1252,15 +1204,12 @@
     var setup = function (editor, imageUploadTimerState, lastSelectedImageState) {
       editor.on('NodeChange', function (e) {
         var lastSelectedImage = lastSelectedImageState.get();
-        var selectedImage = getEditableImage(editor, e.element);
-        if (lastSelectedImage && !selectedImage.exists(function (img) {
-            return lastSelectedImage.src === img.src;
-          })) {
+        if (lastSelectedImage && lastSelectedImage.src !== e.element.src) {
           cancelTimedUpload(imageUploadTimerState);
           editor.editorUpload.uploadImagesAuto();
           lastSelectedImageState.set(null);
         }
-        selectedImage.each(lastSelectedImageState.set);
+        getEditableImage(editor, e.element).each(lastSelectedImageState.set);
       });
     };
 
@@ -1296,10 +1245,11 @@
         onAction: cmd('mceEditImage'),
         onSetup: function (buttonApi) {
           var setDisabled = function () {
-            var disabled = getSelectedImage(editor).forall(function (element) {
-              return getEditableImage(editor, element.dom).isNone();
+            var elementOpt = getSelectedImage(editor);
+            elementOpt.each(function (element) {
+              var disabled = getEditableImage(editor, element.dom()).isNone();
+              buttonApi.setDisabled(disabled);
             });
-            buttonApi.setDisabled(disabled);
           };
           editor.on('NodeChange', setDisabled);
           return function () {
@@ -1309,7 +1259,7 @@
       });
       editor.ui.registry.addButton('imageoptions', {
         tooltip: 'Image options',
-        icon: 'image',
+        icon: 'image-options',
         onAction: cmd('mceImage')
       });
       editor.ui.registry.addContextMenu('imagetools', {
@@ -1351,4 +1301,4 @@
 
     Plugin();
 
-}());
+}(window));

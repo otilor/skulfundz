@@ -4,9 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.8.1 (2021-05-20)
+ * Version: 5.4.1 (2020-07-08)
  */
-(function () {
+(function (domGlobals) {
     'use strict';
 
     var Cell = function (initial) {
@@ -37,33 +37,6 @@
       };
       return __assign.apply(this, arguments);
     };
-
-    var typeOf = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var isString = isType('string');
-    var isArray = isType('array');
-    var isBoolean = isSimpleType('boolean');
-    var isNumber = isSimpleType('number');
 
     var noop = function () {
     };
@@ -179,7 +152,7 @@
     var from = function (value) {
       return value === null || value === undefined ? NONE : some(value);
     };
-    var Optional = {
+    var Option = {
       some: some,
       none: none,
       from: from
@@ -188,6 +161,34 @@
     var punctuation$1 = punctuation;
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var isString = isType('string');
+    var isArray = isType('array');
+    var isBoolean = isSimpleType('boolean');
+    var isFunction = isSimpleType('function');
+    var isNumber = isSimpleType('number');
 
     var nativeSlice = Array.prototype.slice;
     var nativePush = Array.prototype.push;
@@ -265,7 +266,7 @@
       return hasOwnProperty.call(obj, key);
     };
 
-    var Global = typeof window !== 'undefined' ? window : Function('return this;')();
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
 
     var DOCUMENT = 9;
     var DOCUMENT_FRAGMENT = 11;
@@ -273,7 +274,7 @@
     var TEXT = 3;
 
     var type = function (element) {
-      return element.dom.nodeType;
+      return element.dom().nodeType;
     };
     var isType$1 = function (t) {
       return function (element) {
@@ -286,38 +287,31 @@
       if (isString(value) || isBoolean(value) || isNumber(value)) {
         dom.setAttribute(key, value + '');
       } else {
-        console.error('Invalid call to Attribute.set. Key ', key, ':: Value ', value, ':: Element ', dom);
+        domGlobals.console.error('Invalid call to Attr.set. Key ', key, ':: Value ', value, ':: Element ', dom);
         throw new Error('Attribute value was not simple');
       }
     };
     var set = function (element, key, value) {
-      rawSet(element.dom, key, value);
-    };
-
-    var compareDocumentPosition = function (a, b, match) {
-      return (a.compareDocumentPosition(b) & match) !== 0;
-    };
-    var documentPositionPreceding = function (a, b) {
-      return compareDocumentPosition(a, b, Node.DOCUMENT_POSITION_PRECEDING);
+      rawSet(element.dom(), key, value);
     };
 
     var fromHtml = function (html, scope) {
-      var doc = scope || document;
+      var doc = scope || domGlobals.document;
       var div = doc.createElement('div');
       div.innerHTML = html;
       if (!div.hasChildNodes() || div.childNodes.length > 1) {
-        console.error('HTML does not have a single root node', html);
+        domGlobals.console.error('HTML does not have a single root node', html);
         throw new Error('HTML must have a single root node');
       }
       return fromDom(div.childNodes[0]);
     };
     var fromTag = function (tag, scope) {
-      var doc = scope || document;
+      var doc = scope || domGlobals.document;
       var node = doc.createElement(tag);
       return fromDom(node);
     };
     var fromText = function (text, scope) {
-      var doc = scope || document;
+      var doc = scope || domGlobals.document;
       var node = doc.createTextNode(text);
       return fromDom(node);
     };
@@ -325,12 +319,13 @@
       if (node === null || node === undefined) {
         throw new Error('Node cannot be null or undefined');
       }
-      return { dom: node };
+      return { dom: constant(node) };
     };
     var fromPoint = function (docElm, x, y) {
-      return Optional.from(docElm.dom.elementFromPoint(x, y)).map(fromDom);
+      var doc = docElm.dom();
+      return Option.from(doc.elementFromPoint(x, y)).map(fromDom);
     };
-    var SugarElement = {
+    var Element = {
       fromHtml: fromHtml,
       fromTag: fromTag,
       fromText: fromText,
@@ -338,24 +333,31 @@
       fromPoint: fromPoint
     };
 
+    var compareDocumentPosition = function (a, b, match) {
+      return (a.compareDocumentPosition(b) & match) !== 0;
+    };
+    var documentPositionPreceding = function (a, b) {
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_PRECEDING);
+    };
+
     var bypassSelector = function (dom) {
       return dom.nodeType !== ELEMENT && dom.nodeType !== DOCUMENT && dom.nodeType !== DOCUMENT_FRAGMENT || dom.childElementCount === 0;
     };
     var all = function (selector, scope) {
-      var base = scope === undefined ? document : scope.dom;
-      return bypassSelector(base) ? [] : map(base.querySelectorAll(selector), SugarElement.fromDom);
+      var base = scope === undefined ? domGlobals.document : scope.dom();
+      return bypassSelector(base) ? [] : map(base.querySelectorAll(selector), Element.fromDom);
     };
 
     var parent = function (element) {
-      return Optional.from(element.dom.parentNode).map(SugarElement.fromDom);
+      return Option.from(element.dom().parentNode).map(Element.fromDom);
     };
     var children = function (element) {
-      return map(element.dom.childNodes, SugarElement.fromDom);
+      return map(element.dom().childNodes, Element.fromDom);
     };
     var spot = function (element, offset) {
       return {
-        element: element,
-        offset: offset
+        element: constant(element),
+        offset: constant(offset)
       };
     };
     var leaf = function (element, offset) {
@@ -366,18 +368,18 @@
     var before = function (marker, element) {
       var parent$1 = parent(marker);
       parent$1.each(function (v) {
-        v.dom.insertBefore(element.dom, marker.dom);
+        v.dom().insertBefore(element.dom(), marker.dom());
       });
     };
     var append = function (parent, element) {
-      parent.dom.appendChild(element.dom);
+      parent.dom().appendChild(element.dom());
     };
     var wrap = function (element, wrapper) {
       before(element, wrapper);
       append(wrapper, element);
     };
 
-    var NodeValue = function (is, name) {
+    function NodeValue (is, name) {
       var get = function (element) {
         if (!is(element)) {
           throw new Error('Can only get ' + name + ' value of a ' + name + ' node');
@@ -385,25 +387,27 @@
         return getOption(element).getOr('');
       };
       var getOption = function (element) {
-        return is(element) ? Optional.from(element.dom.nodeValue) : Optional.none();
+        return is(element) ? Option.from(element.dom().nodeValue) : Option.none();
       };
       var set = function (element, value) {
         if (!is(element)) {
           throw new Error('Can only set raw ' + name + ' value of a ' + name + ' node');
         }
-        element.dom.nodeValue = value;
+        element.dom().nodeValue = value;
       };
       return {
         get: get,
         getOption: getOption,
         set: set
       };
-    };
+    }
 
     var api = NodeValue(isText, 'text');
     var get = function (element) {
       return api.get(element);
     };
+
+    var supported = isFunction(domGlobals.Element.prototype.attachShadow) && isFunction(domGlobals.Node.prototype.getRootNode);
 
     var descendants = function (scope, selector) {
       return all(selector, scope);
@@ -437,7 +441,7 @@
       };
     };
     var toLeaf = function (node, offset) {
-      return leaf(SugarElement.fromDom(node), offset);
+      return leaf(Element.fromDom(node), offset);
     };
     var walk = function (dom, walkerFn, startNode, callbacks, endNode, skipStart) {
       if (skipStart === void 0) {
@@ -474,7 +478,7 @@
       }
       var rootBlock = dom.getParent(rootNode, dom.isBlock);
       var walker = new global$2(node, rootBlock);
-      var walkerFn = forwards ? walker.next.bind(walker) : walker.prev.bind(walker);
+      var walkerFn = forwards ? walker.next : walker.prev;
       walk(dom, walkerFn, node, {
         boundary: always,
         cef: always,
@@ -484,7 +488,7 @@
           } else {
             section.sOffset += next.length;
           }
-          section.elements.push(SugarElement.fromDom(next));
+          section.elements.push(Element.fromDom(next));
         }
       });
     };
@@ -503,7 +507,7 @@
         }
         return false;
       };
-      walk(dom, walker.next.bind(walker), startNode, {
+      walk(dom, walker.next, startNode, {
         boundary: finishSection,
         cef: function (node) {
           finishSection();
@@ -513,7 +517,7 @@
           return false;
         },
         text: function (next) {
-          current.elements.push(SugarElement.fromDom(next));
+          current.elements.push(Element.fromDom(next));
           if (callbacks) {
             callbacks.text(next, current);
           }
@@ -527,24 +531,24 @@
     };
     var collectRangeSections = function (dom, rng) {
       var start = toLeaf(rng.startContainer, rng.startOffset);
-      var startNode = start.element.dom;
+      var startNode = start.element().dom();
       var end = toLeaf(rng.endContainer, rng.endOffset);
-      var endNode = end.element.dom;
+      var endNode = end.element().dom();
       return collect(dom, rng.commonAncestorContainer, startNode, endNode, {
         text: function (node, section) {
           if (node === endNode) {
-            section.fOffset += node.length - end.offset;
+            section.fOffset += node.length - end.offset();
           } else if (node === startNode) {
-            section.sOffset += start.offset;
+            section.sOffset += start.offset();
           }
         },
         cef: function (node) {
-          var sections = bind(descendants(SugarElement.fromDom(node), '*[contenteditable=true]'), function (e) {
-            var ceTrueNode = e.dom;
+          var sections = bind(descendants(Element.fromDom(node), '*[contenteditable=true]'), function (e) {
+            var ceTrueNode = e.dom();
             return collect(dom, ceTrueNode, ceTrueNode);
           });
           return sort(sections, function (a, b) {
-            return documentPositionPreceding(a.elements[0].dom, b.elements[0].dom) ? 1 : -1;
+            return documentPositionPreceding(a.elements[0].dom(), b.elements[0].dom()) ? 1 : -1;
           });
         }
       }, false);
@@ -630,9 +634,9 @@
     var mark = function (matches, replacementNode) {
       eachr(matches, function (match, idx) {
         eachr(match, function (pos) {
-          var wrapper = SugarElement.fromDom(replacementNode.cloneNode(false));
+          var wrapper = Element.fromDom(replacementNode.cloneNode(false));
           set(wrapper, 'data-mce-index', idx);
-          var textNode = pos.element.dom;
+          var textNode = pos.element.dom();
           if (textNode.length === pos.finish && pos.start === 0) {
             wrap(pos.element, wrapper);
           } else {
@@ -640,7 +644,7 @@
               textNode.splitText(pos.finish);
             }
             var matchNode = textNode.splitText(pos.start);
-            wrap(SugarElement.fromDom(matchNode), wrapper);
+            wrap(Element.fromDom(matchNode), wrapper);
           }
         });
       });
@@ -884,18 +888,18 @@
     };
 
     var value = function () {
-      var subject = Cell(Optional.none());
+      var subject = Cell(Option.none());
       var clear = function () {
-        return subject.set(Optional.none());
+        subject.set(Option.none());
       };
       var set = function (s) {
-        return subject.set(Optional.some(s));
+        subject.set(Option.some(s));
+      };
+      var on = function (f) {
+        subject.get().each(f);
       };
       var isSet = function () {
         return subject.get().isSome();
-      };
-      var on = function (f) {
-        return subject.get().each(f);
       };
       return {
         clear: clear,
@@ -911,12 +915,12 @@
       var dialogApi = value();
       editor.undoManager.add();
       var selectedText = global$1.trim(editor.selection.getContent({ format: 'text' }));
-      var updateButtonStates = function (api) {
+      function updateButtonStates(api) {
         var updateNext = hasNext(editor, currentSearchState) ? api.enable : api.disable;
         updateNext('next');
         var updatePrev = hasPrev(editor, currentSearchState) ? api.enable : api.disable;
         updatePrev('prev');
-      };
+      }
       var updateSearchState = function (api) {
         var data = api.getData();
         var current = currentSearchState.get();
@@ -936,11 +940,11 @@
         var toggle = disable ? api.disable : api.enable;
         each(buttons, toggle);
       };
-      var notFoundAlert = function (api) {
+      function notFoundAlert(api) {
         editor.windowManager.alert('Could not find the specified string.', function () {
           api.focus('findtext');
         });
-      };
+      }
       var focusButtonIfRequired = function (api, name) {
         if (global$3.browser.isSafari() && global$3.deviceType.isTouch() && (name === 'find' || name === 'replace' || name === 'replaceall')) {
           api.focus(name);
@@ -1059,7 +1063,7 @@
           {
             type: 'custom',
             name: 'replaceall',
-            text: 'Replace all',
+            text: 'Replace All',
             disabled: true
           }
         ],
@@ -1160,4 +1164,4 @@
 
     Plugin();
 
-}());
+}(window));

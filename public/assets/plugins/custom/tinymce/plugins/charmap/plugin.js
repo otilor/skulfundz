@@ -4,9 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.8.1 (2021-05-20)
+ * Version: 5.4.1 (2020-07-08)
  */
-(function () {
+(function (domGlobals) {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
@@ -20,24 +20,14 @@
       editor.execCommand('mceInsertContent', false, evtChr);
     };
 
-    var typeOf = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
+    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+
+    var getCharMap = function (editor) {
+      return editor.getParam('charmap');
     };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
+    var getCharMapAppend = function (editor) {
+      return editor.getParam('charmap_append');
     };
-    var isArray = isType('array');
 
     var noop = function () {
     };
@@ -149,11 +139,30 @@
     var from = function (value) {
       return value === null || value === undefined ? NONE : some(value);
     };
-    var Optional = {
+    var Option = {
       some: some,
       none: none,
       from: from
     };
+
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isArray = isType('array');
 
     var nativePush = Array.prototype.push;
     var map = function (xs, f) {
@@ -175,12 +184,12 @@
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
         if (pred(x, i)) {
-          return Optional.some(x);
+          return Option.some(x);
         } else if (until(x, i)) {
           break;
         }
       }
-      return Optional.none();
+      return Option.none();
     };
     var find = function (xs, pred) {
       return findUntil(xs, pred, never);
@@ -197,15 +206,6 @@
     };
     var bind = function (xs, f) {
       return flatten(map(xs, f));
-    };
-
-    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
-
-    var getCharMap = function (editor) {
-      return editor.getParam('charmap');
-    };
-    var getCharMapAppend = function (editor) {
-      return editor.getParam('charmap_append');
     };
 
     var isArray$1 = global$1.isArray;
@@ -1480,7 +1480,7 @@
       var timer = null;
       var cancel = function () {
         if (timer !== null) {
-          clearTimeout(timer);
+          domGlobals.clearTimeout(timer);
           timer = null;
         }
       };
@@ -1490,9 +1490,9 @@
           args[_i] = arguments[_i];
         }
         if (timer !== null) {
-          clearTimeout(timer);
+          domGlobals.clearTimeout(timer);
         }
-        timer = setTimeout(function () {
+        timer = domGlobals.setTimeout(function () {
           fn.apply(null, args);
           timer = null;
         }, rate);
@@ -1703,4 +1703,4 @@
 
     Plugin();
 
-}());
+}(window));
