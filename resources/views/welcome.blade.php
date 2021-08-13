@@ -76,20 +76,6 @@
                                         <a class="menu-link nav-link py-3 px-4 px-xxl-6" href="#how-it-works" data-kt-scroll-toggle="true" data-kt-drawer-dismiss="true">How it Works</a>
                                         <!--end::Menu link-->
                                     </div>
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-
-                                    <!--end::Menu item-->
-                                </div>
-                                <!--end::Menu-->
                             </div>
                         </div>
                         <!--end::Menu wrapper-->
